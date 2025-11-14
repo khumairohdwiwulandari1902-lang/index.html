@@ -1,1 +1,738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bikinkan - Kalender Haid Islami</title>
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --secondary: #9b59b6;
+            --light: #f5eef8;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --haid-color: #e74c3c;
+            --istihadah-color: #f39c12;
+            --suci-color: #27ae60;
+            --prediction-color: #3498db;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+        }
+        
+        .calendar-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        .calendar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-header h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .calendar-nav button {
+            background: var(--light);
+            color: var(--primary);
+            padding: 8px 12px;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px 0;
+            color: var(--primary);
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            padding: 5px;
+        }
+        
+        .calendar-day:hover {
+            background-color: var(--light);
+        }
+        
+        .calendar-day.haid {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 2px solid var(--haid-color);
+        }
+        
+        .calendar-day.istihadah {
+            background-color: rgba(243, 156, 18, 0.2);
+            border: 2px solid var(--istihadah-color);
+        }
+        
+        .calendar-day.suci {
+            background-color: rgba(39, 174, 96, 0.1);
+        }
+        
+        .calendar-day.prediction {
+            background-color: rgba(52, 152, 219, 0.1);
+            border: 1px dashed var(--prediction-color);
+        }
+        
+        .calendar-day.other-month {
+            opacity: 0.4;
+        }
+        
+        .calendar-day.today {
+            font-weight: bold;
+            background-color: var(--light);
+        }
+        
+        .day-number {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .day-status {
+            font-size: 0.7rem;
+            margin-top: 2px;
+            text-align: center;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .legend-color.haid {
+            background-color: var(--haid-color);
+        }
+        
+        .legend-color.istihadah {
+            background-color: var(--istihadah-color);
+        }
+        
+        .legend-color.suci {
+            background-color: var(--suci-color);
+        }
+        
+        .legend-color.prediction {
+            background-color: var(--prediction-color);
+        }
+        
+        .current-status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .current-status.haid {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--haid-color);
+        }
+        
+        .current-status.istihadah {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: var(--istihadah-color);
+        }
+        
+        .current-status.suci {
+            background-color: rgba(39, 174, 96, 0.2);
+            color: var(--suci-color);
+        }
+        
+        .info-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .date-display {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .calendar-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bikinkan</h1>
+            <p class="subtitle">Kalender Haid Islami dengan Deteksi Otomatis</p>
+        </header>
+        
+        <div class="card">
+            <h2>Catat Siklus Haid</h2>
+            <form id="periodForm">
+                <div class="form-group">
+                    <label for="startDate">Tanggal Mulai Haid</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="endDate">Tanggal Selesai Haid</label>
+                    <input type="date" id="endDate" required>
+                </div>
+                
+                <button type="submit">Simpan Data Haid</button>
+            </form>
+        </div>
+        
+        <div class="calendar-container">
+            <div class="calendar">
+                <div class="calendar-header">
+                    <h3 id="currentMonth">Bulan Tahun</h3>
+                    <div class="calendar-nav">
+                        <button id="prevMonth">&lt; Sebelumnya</button>
+                        <button id="todayBtn">Hari Ini</button>
+                        <button id="nextMonth">Selanjutnya &gt;</button>
+                    </div>
+                </div>
+                
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar days will be generated here -->
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="card">
+                    <h2>Status Hari Ini</h2>
+                    <div class="current-status" id="currentStatus">
+                        Memuat...
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>Legenda</h2>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color haid"></div>
+                            <span>Haid Biasa</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color istihadah"></div>
+                            <span>Istihadah</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color suci"></div>
+                            <span>Masa Suci</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color prediction"></div>
+                            <span>Prediksi Haid</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2>Riwayat Terbaru</h2>
+                    <div id="historyList">
+                        <!-- History will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <div class="info-title">Informasi Penting</div>
+            <p>Bikinkan membantu wanita muslimah mencatat dan menganalisis siklus haid berdasarkan ketentuan Islam:</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Masa haid minimum: 1 hari, maksimum: 15 hari</li>
+                <li>Masa suci minimum: 15 hari</li>
+                <li>Istihadah adalah darah di luar kebiasaan haid</li>
+                <li>Aplikasi ini mendeteksi otomatis jenis siklus berdasarkan pola haid sebelumnya</li>
+                <li>Prediksi haid berikutnya berdasarkan rata-rata siklus sebelumnya</li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>Bikinkan &copy; 2023 - Kalender Haid Islami</p>
+        </footer>
+    </div>
 
+    <script>
+        // Data storage
+        let periodHistory = JSON.parse(localStorage.getItem('bikinkanHistory')) || [];
+        
+        // Calendar state
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        
+        // DOM Elements
+        const periodForm = document.getElementById('periodForm');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const calendarGrid = document.getElementById('calendarGrid');
+        const currentMonthElement = document.getElementById('currentMonth');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const todayBtn = document.getElementById('todayBtn');
+        const currentStatusElement = document.getElementById('currentStatus');
+        const historyList = document.getElementById('historyList');
+        
+        // Set default dates to today
+        const today = new Date().toISOString().split('T')[0];
+        startDateInput.value = today;
+        endDateInput.value = today;
+        
+        // Event Listeners
+        periodForm.addEventListener('submit', savePeriodData);
+        prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+        nextMonthBtn.addEventListener('click', () => changeMonth(1));
+        todayBtn.addEventListener('click', goToToday);
+        
+        // Initialize
+        generateCalendar();
+        updateCurrentStatus();
+        displayHistory();
+        
+        // Functions
+        function savePeriodData(e) {
+            e.preventDefault();
+            
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+            
+            // Validate dates
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('Tanggal selesai tidak boleh sebelum tanggal mulai!');
+                return;
+            }
+            
+            // Calculate duration
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
+            // Auto-detect cycle type based on history
+            let cycleType = 'regular';
+            if (periodHistory.length > 0) {
+                const lastPeriod = periodHistory[periodHistory.length - 1];
+                const lastEndDate = new Date(lastPeriod.endDate);
+                const daysBetween = Math.ceil((start - lastEndDate) / (1000 * 60 * 60 * 24));
+                
+                // If less than 15 days between periods, mark as istihadah
+                if (daysBetween < 15) {
+                    cycleType = 'istihadah';
+                }
+            }
+            
+            // Add to history
+            const periodData = {
+                id: Date.now(),
+                startDate,
+                endDate,
+                duration,
+                cycleType,
+                createdAt: new Date().toISOString()
+            };
+            
+            periodHistory.push(periodData);
+            localStorage.setItem('bikinkanHistory', JSON.stringify(periodHistory));
+            
+            // Reset form
+            periodForm.reset();
+            startDateInput.value = today;
+            endDateInput.value = today;
+            
+            // Update display
+            generateCalendar();
+            updateCurrentStatus();
+            displayHistory();
+            
+            alert('Data haid berhasil disimpan!');
+        }
+        
+        function generateCalendar() {
+            // Clear calendar
+            calendarGrid.innerHTML = '';
+            
+            // Set month and year in header
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            // Add day headers
+            const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            dayNames.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day-header';
+                dayElement.textContent = day.substring(0, 3);
+                calendarGrid.appendChild(dayElement);
+            });
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < startingDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day other-month';
+                calendarGrid.appendChild(emptyDay);
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const date = new Date(dateStr);
+                
+                // Check if today
+                const today = new Date();
+                if (date.getDate() === today.getDate() && 
+                    date.getMonth() === today.getMonth() && 
+                    date.getFullYear() === today.getFullYear()) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Check period status
+                const status = getDateStatus(date);
+                dayElement.classList.add(status);
+                
+                // Add day number
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = day;
+                dayElement.appendChild(dayNumber);
+                
+                // Add status indicator
+                const statusIndicator = document.createElement('div');
+                statusIndicator.className = 'day-status';
+                
+                if (status === 'haid') {
+                    statusIndicator.textContent = 'Haid';
+                } else if (status === 'istihadah') {
+                    statusIndicator.textContent = 'Istihadah';
+                } else if (status === 'prediction') {
+                    statusIndicator.textContent = 'Prediksi';
+                }
+                
+                dayElement.appendChild(statusIndicator);
+                
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+        
+        function getDateStatus(date) {
+            const dateStr = date.toISOString().split('T')[0];
+            
+            // Check if date is within a recorded period
+            for (const period of periodHistory) {
+                const start = new Date(period.startDate);
+                const end = new Date(period.endDate);
+                
+                if (date >= start && date <= end) {
+                    return period.cycleType === 'regular' ? 'haid' : 'istihadah';
+                }
+            }
+            
+            // Check if date is a predicted period
+            if (isPredictedPeriod(date)) {
+                return 'prediction';
+            }
+            
+            return 'suci';
+        }
+        
+        function isPredictedPeriod(date) {
+            if (periodHistory.length < 2) return false;
+            
+            // Calculate average cycle length
+            let totalDays = 0;
+            for (let i = 1; i < periodHistory.length; i++) {
+                const prevStart = new Date(periodHistory[i-1].startDate);
+                const currStart = new Date(periodHistory[i].startDate);
+                const diffTime = Math.abs(currStart - prevStart);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                totalDays += diffDays;
+            }
+            
+            const avgCycleLength = Math.round(totalDays / (periodHistory.length - 1));
+            
+            // Get last period start date
+            const lastPeriod = periodHistory[periodHistory.length - 1];
+            const lastStart = new Date(lastPeriod.startDate);
+            
+            // Calculate next predicted period
+            const nextPredictedStart = new Date(lastStart);
+            nextPredictedStart.setDate(nextPredictedStart.getDate() + avgCycleLength);
+            
+            // Calculate predicted period end (using average duration)
+            let totalDuration = 0;
+            periodHistory.forEach(period => totalDuration += period.duration);
+            const avgDuration = Math.round(totalDuration / periodHistory.length);
+            
+            const nextPredictedEnd = new Date(nextPredictedStart);
+            nextPredictedEnd.setDate(nextPredictedEnd.getDate() + avgDuration - 1);
+            
+            // Check if date falls within predicted period
+            return date >= nextPredictedStart && date <= nextPredictedEnd;
+        }
+        
+        function updateCurrentStatus() {
+            const today = new Date();
+            const status = getDateStatus(today);
+            
+            let statusText = '';
+            let statusClass = '';
+            
+            if (status === 'haid') {
+                statusText = 'Haid Biasa';
+                statusClass = 'haid';
+            } else if (status === 'istihadah') {
+                statusText = 'Istihadah';
+                statusClass = 'istihadah';
+            } else if (status === 'prediction') {
+                statusText = 'Masa Suci (Prediksi Haid Mendatang)';
+                statusClass = 'suci';
+            } else {
+                statusText = 'Masa Suci';
+                statusClass = 'suci';
+            }
+            
+            currentStatusElement.textContent = statusText;
+            currentStatusElement.className = `current-status ${statusClass}`;
+        }
+        
+        function changeMonth(direction) {
+            currentMonth += direction;
+            
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            
+            generateCalendar();
+        }
+        
+        function goToToday() {
+            currentDate = new Date();
+            currentMonth = currentDate.getMonth();
+            currentYear = currentDate.getFullYear();
+            generateCalendar();
+            updateCurrentStatus();
+        }
+        
+        function displayHistory() {
+            if (periodHistory.length === 0) {
+                historyList.innerHTML = '<p>Belum ada data haid yang tercatat.</p>';
+                return;
+            }
+            
+            // Sort by date (newest first)
+            const sortedHistory = [...periodHistory].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+            
+            // Show only last 5 records
+            const recentHistory = sortedHistory.slice(0, 5);
+            
+            historyList.innerHTML = recentHistory.map(period => `
+                <div class="history-item">
+                    <div>
+                        <span class="date-display">${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
+                        <div>${period.duration} hari (${period.cycleType === 'regular' ? 'Haid Biasa' : 'Istihadah'})</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+    </script>
+</body>
+  </html>
