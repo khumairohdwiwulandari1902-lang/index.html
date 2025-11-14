@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bikinkan - Penanggalan Haid Islami</title>
+    <style>
+        :root {
+            --primary: #8e44ad;
+            --secondary: #9b59b6;
+            --light: #f5eef8;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: var(--light);
+            display: none;
+        }
+        
+        .result.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .status {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .haid {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger);
+        }
+        
+        .suci {
+            background-color: rgba(39, 174, 96, 0.2);
+            color: var(--success);
+        }
+        
+        .istihadah {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: var(--warning);
+        }
+        
+        .info-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .date-display {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bikinkan</h1>
+            <p class="subtitle">Aplikasi Penanggalan Haid Islami</p>
+        </header>
+        
+        <div class="card">
+            <h2>Catat Siklus Haid</h2>
+            <form id="periodForm">
+                <div class="form-group">
+                    <label for="startDate">Tanggal Mulai Haid</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="endDate">Tanggal Selesai Haid</label>
+                    <input type="date" id="endDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cycleType">Jenis Siklus</label>
+                    <select id="cycleType">
+                        <option value="regular">Haid Biasa</option>
+                        <option value="istihadah">Istihadah</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Simpan Data</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>Status Saat Ini</h2>
+            <div class="form-group">
+                <label for="checkDate">Periksa Status untuk Tanggal</label>
+                <input type="date" id="checkDate" required>
+            </div>
+            <button id="checkStatus">Periksa Status</button>
+            
+            <div class="result" id="statusResult">
+                <!-- Hasil akan ditampilkan di sini -->
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Riwayat Haid</h2>
+            <div id="historyList">
+                <!-- Riwayat akan ditampilkan di sini -->
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <div class="info-title">Informasi Penting</div>
+            <p>Bikinkan membantu wanita muslimah mencatat dan menganalisis siklus haid berdasarkan ketentuan Islam:</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Masa haid minimum: 1 hari, maksimum: 15 hari</li>
+                <li>Masa suci minimum: 15 hari</li>
+                <li>Istihadah adalah darah di luar kebiasaan haid</li>
+                <li>Aplikasi ini membantu membedakan antara haid biasa dan istihadah</li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>Bikinkan &copy; 2023 - Aplikasi Penanggalan Haid Islami</p>
+        </footer>
+    </div>
+
+    <script>
+        // Data storage
+        let periodHistory = JSON.parse(localStorage.getItem('bikinkanHistory')) || [];
+        
+        // DOM Elements
+        const periodForm = document.getElementById('periodForm');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const cycleTypeSelect = document.getElementById('cycleType');
+        const checkDateInput = document.getElementById('checkDate');
+        const checkStatusBtn = document.getElementById('checkStatus');
+        const statusResult = document.getElementById('statusResult');
+        const historyList = document.getElementById('historyList');
+        
+        // Set default dates to today
+        const today = new Date().toISOString().split('T')[0];
+        startDateInput.value = today;
+        endDateInput.value = today;
+        checkDateInput.value = today;
+        
+        // Event Listeners
+        periodForm.addEventListener('submit', savePeriodData);
+        checkStatusBtn.addEventListener('click', checkCurrentStatus);
+        
+        // Load history on page load
+        displayHistory();
+        
+        // Functions
+        function savePeriodData(e) {
+            e.preventDefault();
+            
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+            const cycleType = cycleTypeSelect.value;
+            
+            // Validate dates
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('Tanggal selesai tidak boleh sebelum tanggal mulai!');
+                return;
+            }
+            
+            // Calculate duration
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
+            // Add to history
+            const periodData = {
+                id: Date.now(),
+                startDate,
+                endDate,
+                duration,
+                cycleType,
+                createdAt: new Date().toISOString()
+            };
+            
+            periodHistory.push(periodData);
+            localStorage.setItem('bikinkanHistory', JSON.stringify(periodHistory));
+            
+            // Reset form
+            periodForm.reset();
+            startDateInput.value = today;
+            endDateInput.value = today;
+            
+            // Update display
+            displayHistory();
+            
+            alert('Data haid berhasil disimpan!');
+        }
+        
+        function checkCurrentStatus() {
+            const checkDate = checkDateInput.value;
+            
+            if (!checkDate) {
+                alert('Silakan pilih tanggal untuk diperiksa!');
+                return;
+            }
+            
+            let status = 'suci'; // Default status
+            let message = '';
+            let details = '';
+            
+            // Check if date falls within any recorded period
+            for (const period of periodHistory) {
+                const start = new Date(period.startDate);
+                const end = new Date(period.endDate);
+                const check = new Date(checkDate);
+                
+                if (check >= start && check <= end) {
+                    status = period.cycleType === 'regular' ? 'haid' : 'istihadah';
+                    message = `Anda sedang mengalami ${status === 'haid' ? 'haid biasa' : 'istihadah'}.`;
+                    details = `Periode: ${formatDate(period.startDate)} - ${formatDate(period.endDate)} (${period.duration} hari)`;
+                    break;
+                }
+            }
+            
+            // If not in a period, check if it's within 15 days after a period
+            if (status === 'suci') {
+                for (const period of periodHistory) {
+                    const end = new Date(period.endDate);
+                    const check = new Date(checkDate);
+                    const daysAfter = Math.ceil((check - end) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysAfter > 0 && daysAfter <= 15) {
+                        message = 'Anda sedang dalam masa suci.';
+                        details = `Masa suci ke-${daysAfter} hari setelah haid berakhir.`;
+                        break;
+                    } else if (daysAfter > 15) {
+                        message = 'Anda sedang dalam masa suci.';
+                        details = 'Masa suci telah melebihi 15 hari.';
+                    }
+                }
+                
+                if (periodHistory.length === 0) {
+                    message = 'Anda sedang dalam masa suci.';
+                    details = 'Belum ada data haid yang tercatat.';
+                }
+            }
+            
+            // Display result
+            statusResult.innerHTML = `
+                <div class="status ${status}">Status: ${status === 'haid' ? 'Haid Biasa' : status === 'istihadah' ? 'Istihadah' : 'Suci'}</div>
+                <p>${message}</p>
+                <p>${details}</p>
+                
+                <div class="info-box" style="margin-top: 15px;">
+                    <div class="info-title">Keterangan Hukum</div>
+                    <p>
+                        ${status === 'haid' 
+                            ? 'Pada masa haid, wanita dilarang shalat, puasa, membaca Al-Quran, dan berhubungan suami istri.' 
+                            : status === 'istihadah' 
+                            ? 'Pada masa istihadah, wanita tetap wajib shalat dan puasa, namun perlu berwudhu setiap kali akan shalat.' 
+                            : 'Pada masa suci, semua ibadah dapat dilakukan secara normal.'}
+                    </p>
+                </div>
+            `;
+            
+            statusResult.classList.add('active');
+        }
+        
+        function displayHistory() {
+            if (periodHistory.length === 0) {
+                historyList.innerHTML = '<p>Belum ada data haid yang tercatat.</p>';
+                return;
+            }
+            
+            // Sort by date (newest first)
+            const sortedHistory = [...periodHistory].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+            
+            historyList.innerHTML = sortedHistory.map(period => `
+                <div class="history-item">
+                    <div>
+                        <span class="date-display">${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
+                        <div>${period.duration} hari (${period.cycleType === 'regular' ? 'Haid Biasa' : 'Istihadah'})</div>
+                    </div>
+                    <button onclick="deletePeriod(${period.id})" style="width: auto; padding: 5px 10px; background: var(--danger);">Hapus</button>
+                </div>
+            `).join('');
+        }
+        
+        function deletePeriod(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                periodHistory = periodHistory.filter(period => period.id !== id);
+                localStorage.setItem('bikinkanHistory', JSON.stringify(periodHistory));
+                displayHistory();
+            }
+        }
+        
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+    </script>
+</body>
+</html>
