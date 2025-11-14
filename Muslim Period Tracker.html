@@ -114,6 +114,14 @@
             background-color: var(--secondary);
         }
         
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
         .calendar-container {
             display: grid;
             grid-template-columns: 1fr 300px;
@@ -282,6 +290,12 @@
             color: var(--suci-color);
         }
         
+        .prediction-info {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
         .info-box {
             background-color: white;
             padding: 15px;
@@ -301,6 +315,7 @@
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
         
         .history-item:last-child {
@@ -310,6 +325,16 @@
         .date-display {
             font-weight: bold;
             color: var(--primary);
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .history-actions button {
+            padding: 5px 10px;
+            font-size: 0.8rem;
         }
         
         footer {
@@ -343,7 +368,7 @@
     <div class="container">
         <header>
             <h1>Bikinkan</h1>
-            <p class="subtitle">Kalender Haid Islami dengan Deteksi Otomatis</p>
+            <p class="subtitle">Kalender Haid Islami dengan Prediksi</p>
         </header>
         
         <div class="card">
@@ -385,6 +410,9 @@
                     <div class="current-status" id="currentStatus">
                         Memuat...
                     </div>
+                    <div class="prediction-info" id="predictionInfo">
+                        <!-- Prediction info will be displayed here -->
+                    </div>
                 </div>
                 
                 <div class="card">
@@ -410,10 +438,11 @@
                 </div>
                 
                 <div class="card">
-                    <h2>Riwayat Terbaru</h2>
+                    <h2>Riwayat Haid</h2>
                     <div id="historyList">
                         <!-- History will be displayed here -->
                     </div>
+                    <button id="clearHistory" class="btn-danger" style="width: 100%; margin-top: 15px;">Hapus Semua Riwayat</button>
                 </div>
             </div>
         </div>
@@ -454,7 +483,9 @@
         const nextMonthBtn = document.getElementById('nextMonth');
         const todayBtn = document.getElementById('todayBtn');
         const currentStatusElement = document.getElementById('currentStatus');
+        const predictionInfoElement = document.getElementById('predictionInfo');
         const historyList = document.getElementById('historyList');
+        const clearHistoryBtn = document.getElementById('clearHistory');
         
         // Set default dates to today
         const today = new Date().toISOString().split('T')[0];
@@ -466,6 +497,7 @@
         prevMonthBtn.addEventListener('click', () => changeMonth(-1));
         nextMonthBtn.addEventListener('click', () => changeMonth(1));
         todayBtn.addEventListener('click', goToToday);
+        clearHistoryBtn.addEventListener('click', clearAllHistory);
         
         // Initialize
         generateCalendar();
@@ -683,6 +715,55 @@
             
             currentStatusElement.textContent = statusText;
             currentStatusElement.className = `current-status ${statusClass}`;
+            
+            // Update prediction info
+            updatePredictionInfo();
+        }
+        
+        function updatePredictionInfo() {
+            if (periodHistory.length < 2) {
+                predictionInfoElement.innerHTML = '<p>Catat minimal 2 siklus untuk prediksi</p>';
+                return;
+            }
+            
+            // Calculate average cycle length
+            let totalDays = 0;
+            for (let i = 1; i < periodHistory.length; i++) {
+                const prevStart = new Date(periodHistory[i-1].startDate);
+                const currStart = new Date(periodHistory[i].startDate);
+                const diffTime = Math.abs(currStart - prevStart);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                totalDays += diffDays;
+            }
+            
+            const avgCycleLength = Math.round(totalDays / (periodHistory.length - 1));
+            
+            // Get last period start date
+            const lastPeriod = periodHistory[periodHistory.length - 1];
+            const lastStart = new Date(lastPeriod.startDate);
+            
+            // Calculate next predicted period
+            const nextPredictedStart = new Date(lastStart);
+            nextPredictedStart.setDate(nextPredictedStart.getDate() + avgCycleLength);
+            
+            // Calculate predicted period end (using average duration)
+            let totalDuration = 0;
+            periodHistory.forEach(period => totalDuration += period.duration);
+            const avgDuration = Math.round(totalDuration / periodHistory.length);
+            
+            const nextPredictedEnd = new Date(nextPredictedStart);
+            nextPredictedEnd.setDate(nextPredictedEnd.getDate() + avgDuration - 1);
+            
+            // Format dates
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const startFormatted = nextPredictedStart.toLocaleDateString('id-ID', options);
+            const endFormatted = nextPredictedEnd.toLocaleDateString('id-ID', options);
+            
+            predictionInfoElement.innerHTML = `
+                <p><strong>Prediksi Haid Berikutnya:</strong></p>
+                <p>${startFormatted} - ${endFormatted}</p>
+                <p>Rata-rata siklus: ${avgCycleLength} hari</p>
+            `;
         }
         
         function changeMonth(direction) {
@@ -716,17 +797,37 @@
             // Sort by date (newest first)
             const sortedHistory = [...periodHistory].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
             
-            // Show only last 5 records
-            const recentHistory = sortedHistory.slice(0, 5);
-            
-            historyList.innerHTML = recentHistory.map(period => `
+            historyList.innerHTML = sortedHistory.map(period => `
                 <div class="history-item">
                     <div>
                         <span class="date-display">${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
                         <div>${period.duration} hari (${period.cycleType === 'regular' ? 'Haid Biasa' : 'Istihadah'})</div>
                     </div>
+                    <div class="history-actions">
+                        <button class="btn-danger" onclick="deletePeriod(${period.id})">Hapus</button>
+                    </div>
                 </div>
             `).join('');
+        }
+        
+        function deletePeriod(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                periodHistory = periodHistory.filter(period => period.id !== id);
+                localStorage.setItem('bikinkanHistory', JSON.stringify(periodHistory));
+                generateCalendar();
+                updateCurrentStatus();
+                displayHistory();
+            }
+        }
+        
+        function clearAllHistory() {
+            if (confirm('Apakah Anda yakin ingin menghapus SEMUA riwayat haid? Tindakan ini tidak dapat dibatalkan.')) {
+                periodHistory = [];
+                localStorage.setItem('bikinkanHistory', JSON.stringify(periodHistory));
+                generateCalendar();
+                updateCurrentStatus();
+                displayHistory();
+            }
         }
         
         function formatDate(dateString) {
@@ -735,4 +836,4 @@
         }
     </script>
 </body>
-  </html>
+</html>
