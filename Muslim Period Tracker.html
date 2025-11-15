@@ -1239,12 +1239,32 @@
             // Calculate days since last period ended
             const daysSinceLast = Math.ceil((date - lastEnd) / (1000 * 60 * 60 * 24));
             
-            // If last period was regular, predict next after 15 days
-            // If last period was istihadah, predict next after less than 15 days
-            const minDaysBetween = lastPeriod.cycleType === 'regular' ? 15 : 10;
+            // Calculate average cycle length from all periods
+            let totalCycleLength = 0;
+            let cycleCount = 0;
             
-            // Check if we're in the prediction window (next 5 days)
-            return daysSinceLast >= minDaysBetween && daysSinceLast <= minDaysBetween + 5;
+            for (let i = 1; i < periodHistory.length; i++) {
+                const prevStart = new Date(periodHistory[i-1].startDate);
+                const currStart = new Date(periodHistory[i].startDate);
+                const cycleLength = Math.ceil((currStart - prevStart) / (1000 * 60 * 60 * 24));
+                
+                // Only include cycles that are not istihadah (normal cycles)
+                if (periodHistory[i-1].cycleType === 'regular' && periodHistory[i].cycleType === 'regular') {
+                    totalCycleLength += cycleLength;
+                    cycleCount++;
+                }
+            }
+            
+            // If we have normal cycles, use average
+            if (cycleCount > 0) {
+                const avgCycleLength = Math.round(totalCycleLength / cycleCount);
+                
+                // Check if we're in the prediction window (next 5 days)
+                return daysSinceLast >= avgCycleLength && daysSinceLast <= avgCycleLength + 5;
+            } else {
+                // If no normal cycles, use default 28 days
+                return daysSinceLast >= 28 && daysSinceLast <= 33;
+            }
         }
         
         function toggleManualPeriod(dateStr) {
