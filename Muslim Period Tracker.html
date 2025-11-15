@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bikinkan - Muslim Period Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #8e44ad;
@@ -18,6 +19,9 @@
             --suci-color: #27ae60;
             --prediction-color: #f1c40f;
             --manual-color: #e74c3c;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
         }
         
         * {
@@ -28,8 +32,8 @@
         }
         
         body {
-            background-color: #f9f9f9;
-            color: var(--dark);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.6;
             overflow-x: hidden;
         }
@@ -57,7 +61,7 @@
         }
         
         .logo {
-            font-size: 3.5rem;
+            font-size: 4rem;
             color: white;
             margin-bottom: 20px;
             text-align: center;
@@ -66,11 +70,19 @@
         }
         
         .app-name {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        .app-subtitle {
+            font-size: 1.2rem;
             color: white;
             margin-bottom: 30px;
             text-align: center;
-            font-weight: 300;
+            opacity: 0.9;
         }
         
         .enter-btn {
@@ -93,7 +105,7 @@
         
         /* Main App Styles */
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
             opacity: 0;
@@ -107,56 +119,260 @@
         }
         
         header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .app-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .app-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .date-display {
+            font-size: 1.2rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
         }
         
         .card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         
         .card h2 {
             color: var(--primary);
             margin-bottom: 15px;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             border-bottom: 2px solid var(--light);
             padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2 i {
+            color: var(--secondary);
+        }
+        
+        .today-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(142, 68, 173, 0.1);
+        }
+        
+        .status-icon {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .status-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        
+        .status-info p {
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .calendar-section {
+            margin-top: 20px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-nav h3 {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            background: var(--light);
+            color: var(--primary);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .calendar th {
+            padding: 12px 0;
+            text-align: center;
+            color: var(--primary);
+            font-weight: 600;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .calendar td {
+            width: 14.28%;
+            height: 50px;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .calendar td:hover {
+            background-color: var(--light);
+        }
+        
+        .calendar-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            border-radius: 8px;
+        }
+        
+        .day-number {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .day-status {
+            font-size: 0.7rem;
+            margin-top: 2px;
+        }
+        
+        .today {
+            background-color: rgba(142, 68, 173, 0.1);
+            font-weight: bold;
+        }
+        
+        .haid {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--haid-color);
+        }
+        
+        .istihadah {
+            background-color: rgba(243, 156, 18, 0.2);
+            border: 1px solid var(--istihadah-color);
+        }
+        
+        .prediction {
+            background-color: rgba(241, 196, 15, 0.2);
+            border: 1px dashed var(--prediction-color);
+        }
+        
+        .manual {
+            background-color: rgba(231, 76, 60, 0.3);
+            border: 1px solid var(--manual-color);
+        }
+        
+        .other-month {
+            color: #ccc;
+        }
+        
+        .track-section {
+            margin-top: 20px;
+        }
+        
+        .track-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .track-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: var(--light);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .track-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .track-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
+            color: var(--dark);
         }
         
         input, select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 1rem;
             transition: border 0.3s;
         }
@@ -171,11 +387,12 @@
             color: white;
             border: none;
             padding: 12px 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 600;
             transition: background 0.3s;
+            width: 100%;
         }
         
         button:hover {
@@ -198,126 +415,11 @@
             background-color: #e67e22;
         }
         
-        .calendar-container {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
-        }
-        
-        .calendar {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .calendar-header h3 {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-        
-        .calendar-nav {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .calendar-nav button {
-            background: var(--light);
-            color: var(--primary);
-            padding: 8px 12px;
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-        
-        .calendar-day-header {
-            text-align: center;
-            font-weight: bold;
-            padding: 10px 0;
-            color: var(--primary);
-        }
-        
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            padding: 5px;
-        }
-        
-        .calendar-day:hover {
-            background-color: var(--light);
-        }
-        
-        .calendar-day.haid {
-            background-color: rgba(231, 76, 60, 0.3);
-            border: 2px solid var(--haid-color);
-        }
-        
-        .calendar-day.istihadah {
-            background-color: rgba(243, 156, 18, 0.3);
-            border: 2px solid var(--istihadah-color);
-        }
-        
-        .calendar-day.suci {
-            background-color: rgba(39, 174, 96, 0.1);
-        }
-        
-        .calendar-day.prediction {
-            background-color: rgba(241, 196, 15, 0.2);
-            border: 1px dashed var(--prediction-color);
-        }
-        
-        .calendar-day.manual {
-            background-color: rgba(231, 76, 60, 0.4);
-            border: 2px solid var(--manual-color);
-        }
-        
-        .calendar-day.other-month {
-            opacity: 0.4;
-        }
-        
-        .calendar-day.today {
-            font-weight: bold;
-            background-color: var(--light);
-        }
-        
-        .day-number {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        
-        .day-status {
-            font-size: 0.7rem;
-            margin-top: 2px;
-            text-align: center;
-        }
-        
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
         .legend {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 15px;
         }
         
         .legend-item {
@@ -352,51 +454,13 @@
             background-color: var(--manual-color);
         }
         
-        .current-status {
-            text-align: center;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .current-status.haid {
-            background-color: rgba(231, 76, 60, 0.2);
-            color: var(--haid-color);
-        }
-        
-        .current-status.istihadah {
-            background-color: rgba(243, 156, 18, 0.2);
-            color: var(--istihadah-color);
-        }
-        
-        .current-status.suci {
-            background-color: rgba(39, 174, 96, 0.2);
-            color: var(--suci-color);
-        }
-        
-        .prediction-info {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        
-        .info-box {
-            background-color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .info-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: var(--primary);
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
         }
         
         .history-item {
-            padding: 10px;
+            padding: 12px;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
@@ -407,9 +471,14 @@
             border-bottom: none;
         }
         
-        .date-display {
+        .history-date {
             font-weight: bold;
             color: var(--primary);
+        }
+        
+        .history-duration {
+            font-size: 0.9rem;
+            color: var(--dark);
         }
         
         .history-actions {
@@ -420,27 +489,33 @@
         .history-actions button {
             padding: 5px 10px;
             font-size: 0.8rem;
+            width: auto;
         }
         
-        .manual-mode-info {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: rgba(231, 76, 60, 0.1);
-            border-radius: 5px;
-            border-left: 3px solid var(--haid-color);
-        }
-        
-        .istihadah-info {
-            margin-top: 15px;
+        .info-box {
+            margin-top: 20px;
             padding: 15px;
             background-color: rgba(243, 156, 18, 0.1);
-            border-radius: 8px;
+            border-radius: 10px;
             border-left: 4px solid var(--istihadah-color);
         }
         
-        .istihadah-info h4 {
-            color: var(--istihadah-color);
+        .info-title {
+            font-weight: bold;
             margin-bottom: 10px;
+            color: var(--istihadah-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-content {
+            font-size: 0.9rem;
+        }
+        
+        .info-content ul {
+            margin-left: 20px;
+            margin-top: 8px;
         }
         
         footer {
@@ -452,7 +527,7 @@
         }
         
         @media (max-width: 768px) {
-            .calendar-container {
+            .main-content {
                 grid-template-columns: 1fr;
             }
             
@@ -460,20 +535,20 @@
                 padding: 10px;
             }
             
-            h1 {
-                font-size: 1.8rem;
+            .app-title {
+                font-size: 1.5rem;
             }
             
-            .card {
-                padding: 15px;
+            .track-options {
+                grid-template-columns: 1fr;
             }
             
             .logo {
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
             
             .app-name {
-                font-size: 1.5rem;
+                font-size: 2rem;
             }
         }
     </style>
@@ -481,69 +556,99 @@
 <body>
     <!-- Opening Screen -->
     <div class="opening-screen" id="openingScreen">
-        <div class="logo">🩸</div>
+        <div class="logo"><i class="fas fa-moon"></i></div>
         <h1 class="app-name">Bikinkan</h1>
-        <p style="color: white; margin-bottom: 30px; text-align: center;">Muslim Period Tracker</p>
-        <button class="enter-btn" id="enterBtn">Masuk ke Aplikasi</button>
+        <p class="app-subtitle">Muslim Period Tracker</p>
+        <button class="enter-btn" id="enterBtn">Mulai Tracking</button>
     </div>
     
     <!-- Main App -->
     <div class="container" id="mainApp">
         <header>
-            <h1>Bikinkan</h1>
-            <p class="subtitle">Muslim Period Tracker - Pelacak Siklus Haid Islami</p>
+            <div class="app-header">
+                <div class="app-icon"><i class="fas fa-moon"></i></div>
+                <h1 class="app-title">Bikinkan</h1>
+            </div>
+            <div class="date-display" id="currentDate">Senin, 25 November 2024</div>
         </header>
         
-        <div class="card">
-            <h2>Catat Siklus Haid</h2>
-            <form id="periodForm">
-                <div class="form-group">
-                    <label for="startDate">Tanggal Mulai Haid</label>
-                    <input type="date" id="startDate" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="endDate">Tanggal Selesai Haid</label>
-                    <input type="date" id="endDate" required>
-                </div>
-                
-                <button type="submit">Simpan Data Haid</button>
-            </form>
-            
-            <div class="manual-mode-info">
-                <p><strong>Mode Manual:</strong> Klik pada tanggal di kalender untuk menandai hari haid secara manual.</p>
-            </div>
-        </div>
-        
-        <div class="calendar-container">
-            <div class="calendar">
-                <div class="calendar-header">
-                    <h3 id="currentMonth">Bulan Tahun</h3>
-                    <div class="calendar-nav">
-                        <button id="prevMonth">&lt; Sebelumnya</button>
-                        <button id="todayBtn">Hari Ini</button>
-                        <button id="nextMonth">Selanjutnya &gt;</button>
-                    </div>
-                </div>
-                
-                <div class="calendar-grid" id="calendarGrid">
-                    <!-- Calendar days will be generated here -->
-                </div>
-            </div>
-            
-            <div class="sidebar">
+        <div class="main-content">
+            <div class="left-panel">
                 <div class="card">
-                    <h2>Status Hari Ini</h2>
-                    <div class="current-status" id="currentStatus">
-                        Memuat...
+                    <h2><i class="fas fa-calendar-day"></i> Hari Ini</h2>
+                    <div class="today-status">
+                        <div class="status-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="status-info">
+                            <h3 id="todayStatus">Masa Suci</h3>
+                            <p id="todayDetails">Hari ke-12 dari siklus 28 hari</p>
+                        </div>
                     </div>
-                    <div class="prediction-info" id="predictionInfo">
-                        <!-- Prediction info will be displayed here -->
+                    
+                    <div class="calendar-section">
+                        <div class="calendar-nav">
+                            <h3 id="currentMonth">November 2024</h3>
+                            <div class="nav-buttons">
+                                <button class="nav-btn" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                                <button class="nav-btn" id="todayBtn">Hari Ini</button>
+                                <button class="nav-btn" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        
+                        <table class="calendar">
+                            <thead>
+                                <tr>
+                                    <th>M</th>
+                                    <th>S</th>
+                                    <th>S</th>
+                                    <th>R</th>
+                                    <th>K</th>
+                                    <th>J</th>
+                                    <th>S</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calendarBody">
+                                <!-- Calendar will be generated here -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 
                 <div class="card">
-                    <h2>Legenda</h2>
+                    <h2><i class="fas fa-notes-medical"></i> Gejala</h2>
+                    <div class="track-options">
+                        <button class="track-btn">
+                            <i class="fas fa-brain"></i>
+                            <span>Mood</span>
+                        </button>
+                        <button class="track-btn">
+                            <i class="fas fa-tint"></i>
+                            <span>Darah</span>
+                        </button>
+                        <button class="track-btn">
+                            <i class="fas fa-pain"></i>
+                            <span>Nyeri</span>
+                        </button>
+                        <button class="track-btn">
+                            <i class="fas fa-utensils"></i>
+                            <span>Makanan</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="card">
+                    <h2><i class="fas fa-history"></i> Riwayat</h2>
+                    <div class="history-list" id="historyList">
+                        <!-- History will be displayed here -->
+                    </div>
+                    <button id="clearHistory" class="btn-danger" style="margin-top: 15px;">Hapus Semua Riwayat</button>
+                </div>
+                
+                <div class="card">
+                    <h2><i class="fas fa-info-circle"></i> Legenda</h2>
                     <div class="legend">
                         <div class="legend-item">
                             <div class="legend-color haid"></div>
@@ -561,37 +666,52 @@
                             <div class="legend-color prediction"></div>
                             <span>Prediksi Haid</span>
                         </div>
-                        <div class="legend-item">
-                            <div class="legend-color manual"></div>
-                            <span>Haid Manual</span>
-                        </div>
                     </div>
                 </div>
                 
                 <div class="card">
-                    <h2>Riwayat Haid</h2>
-                    <div id="historyList">
-                        <!-- History will be displayed here -->
+                    <h2><i class="fas fa-calendar-plus"></i> Tambah Data</h2>
+                    <form id="periodForm">
+                        <div class="form-group">
+                            <label for="startDate">Tanggal Mulai Haid</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="endDate">Tanggal Selesai Haid</label>
+                            <input type="date" id="endDate" required>
+                        </div>
+                        
+                        <button type="submit">Simpan Data Haid</button>
+                    </form>
+                    
+                    <div class="info-box">
+                        <div class="info-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Informasi Istihadhah</span>
+                        </div>
+                        <div class="info-content">
+                            <p><strong>Saran Konsumsi:</strong></p>
+                            <ul>
+                                <li>Makanan kaya zat besi (daging, hati, bayam)</li>
+                                <li>Jahe dan kurma untuk menguatkan rahim</li>
+                                <li>Makanan bergizi untuk mengembalikan energi</li>
+                            </ul>
+                            <p><strong>Pantangan dalam Islam:</strong></p>
+                            <ul>
+                                <li>Wajib shalat dengan berwudhu setiap waktu</li>
+                                <li>Boleh berpuasa</li>
+                                <li>Boleh membaca Al-Quran</li>
+                                <li>Boleh berhubungan suami istri</li>
+                            </ul>
+                        </div>
                     </div>
-                    <button id="clearHistory" class="btn-danger" style="width: 100%; margin-top: 15px;">Hapus Semua Riwayat</button>
                 </div>
             </div>
         </div>
         
-        <div class="info-box">
-            <div class="info-title">Informasi Penting</div>
-            <p>Bikinkan membantu wanita muslimah mencatat dan menganalisis siklus haid berdasarkan ketentuan Islam:</p>
-            <ul style="margin-left: 20px; margin-top: 10px;">
-                <li>Masa haid normal: 7-15 hari</li>
-                <li>Masa haid istihadhah: lebih dari 15 hari</li>
-                <li>Masa suci minimum: 15 hari</li>
-                <li>Aplikasi ini mendeteksi otomatis jenis siklus berdasarkan durasi haid</li>
-                <li>Prediksi haid berikutnya berdasarkan rata-rata siklus sebelumnya</li>
-            </ul>
-        </div>
-        
         <footer>
-            <p>Bikinkan &copy; 2023 - Muslim Period Tracker</p>
+            <p>Bikinkan &copy; 2024 - Muslim Period Tracker</p>
         </footer>
     </div>
 
@@ -609,16 +729,17 @@
         const openingScreen = document.getElementById('openingScreen');
         const enterBtn = document.getElementById('enterBtn');
         const mainApp = document.getElementById('mainApp');
-        const periodForm = document.getElementById('periodForm');
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
-        const calendarGrid = document.getElementById('calendarGrid');
+        const currentDateElement = document.getElementById('currentDate');
+        const todayStatusElement = document.getElementById('todayStatus');
+        const todayDetailsElement = document.getElementById('todayDetails');
         const currentMonthElement = document.getElementById('currentMonth');
+        const calendarBody = document.getElementById('calendarBody');
         const prevMonthBtn = document.getElementById('prevMonth');
         const nextMonthBtn = document.getElementById('nextMonth');
         const todayBtn = document.getElementById('todayBtn');
-        const currentStatusElement = document.getElementById('currentStatus');
-        const predictionInfoElement = document.getElementById('predictionInfo');
+        const periodForm = document.getElementById('periodForm');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
         const historyList = document.getElementById('historyList');
         const clearHistoryBtn = document.getElementById('clearHistory');
         
@@ -636,8 +757,9 @@
         clearHistoryBtn.addEventListener('click', clearAllHistory);
         
         // Initialize
+        updateCurrentDate();
         generateCalendar();
-        updateCurrentStatus();
+        updateTodayStatus();
         displayHistory();
         
         // Functions
@@ -646,6 +768,11 @@
             setTimeout(() => {
                 mainApp.classList.add('visible');
             }, 500);
+        }
+        
+        function updateCurrentDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateElement.textContent = currentDate.toLocaleDateString('id-ID', options);
         }
         
         function savePeriodData(e) {
@@ -688,7 +815,7 @@
             
             // Update display
             generateCalendar();
-            updateCurrentStatus();
+            updateTodayStatus();
             displayHistory();
             
             alert('Data haid berhasil disimpan!');
@@ -696,81 +823,97 @@
         
         function generateCalendar() {
             // Clear calendar
-            calendarGrid.innerHTML = '';
+            calendarBody.innerHTML = '';
             
             // Set month and year in header
             const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
                 "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
             
-            // Add day headers
-            const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-            dayNames.forEach(day => {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day-header';
-                dayElement.textContent = day.substring(0, 3);
-                calendarGrid.appendChild(dayElement);
-            });
-            
             // Get first day of month and number of days
             const firstDay = new Date(currentYear, currentMonth, 1);
             const lastDay = new Date(currentYear, currentMonth + 1, 0);
             const daysInMonth = lastDay.getDate();
-            const startingDay = firstDay.getDay();
+            const startingDay = (firstDay.getDay() + 6) % 7; // Adjust to start from Monday
             
-            // Add empty cells for days before the first day of the month
-            for (let i = 0; i < startingDay; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.className = 'calendar-day other-month';
-                calendarGrid.appendChild(emptyDay);
-            }
+            let date = 1;
             
-            // Add days of the month
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
+            // Create calendar rows
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
                 
-                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const date = new Date(dateStr);
-                
-                // Check if today
-                const today = new Date();
-                if (date.getDate() === today.getDate() && 
-                    date.getMonth() === today.getMonth() && 
-                    date.getFullYear() === today.getFullYear()) {
-                    dayElement.classList.add('today');
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement('td');
+                    
+                    if (i === 0 && j < startingDay) {
+                        // Empty cells before the first day of the month
+                        const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+                        const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+                        const prevLastDay = new Date(prevYear, prevMonth + 1, 0).getDate();
+                        const prevDate = prevLastDay - startingDay + j + 1;
+                        
+                        cell.innerHTML = `<div class="calendar-day other-month">${prevDate}</div>`;
+                    } else if (date > daysInMonth) {
+                        // Empty cells after the last day of the month
+                        const nextDate = date - daysInMonth;
+                        cell.innerHTML = `<div class="calendar-day other-month">${nextDate}</div>`;
+                        date++;
+                    } else {
+                        // Current month days
+                        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                        const dayDate = new Date(dateStr);
+                        
+                        const dayElement = document.createElement('div');
+                        dayElement.className = 'calendar-day';
+                        
+                        // Check if today
+                        const today = new Date();
+                        if (dayDate.getDate() === today.getDate() && 
+                            dayDate.getMonth() === today.getMonth() && 
+                            dayDate.getFullYear() === today.getFullYear()) {
+                            dayElement.classList.add('today');
+                        }
+                        
+                        // Check period status
+                        const status = getDateStatus(dayDate);
+                        dayElement.classList.add(status);
+                        
+                        // Add day number
+                        const dayNumber = document.createElement('div');
+                        dayNumber.className = 'day-number';
+                        dayNumber.textContent = date;
+                        dayElement.appendChild(dayNumber);
+                        
+                        // Add status indicator
+                        const statusIndicator = document.createElement('div');
+                        statusIndicator.className = 'day-status';
+                        
+                        if (status === 'haid') {
+                            statusIndicator.textContent = 'Haid';
+                        } else if (status === 'istihadah') {
+                            statusIndicator.textContent = 'Istihadhah';
+                        } else if (status === 'prediction') {
+                            statusIndicator.textContent = 'Prediksi';
+                        }
+                        
+                        dayElement.appendChild(statusIndicator);
+                        
+                        // Add click event for manual marking
+                        cell.addEventListener('click', () => toggleManualPeriod(dateStr));
+                        
+                        cell.appendChild(dayElement);
+                        date++;
+                    }
+                    
+                    row.appendChild(cell);
                 }
                 
-                // Check period status
-                const status = getDateStatus(date);
-                dayElement.classList.add(status);
+                calendarBody.appendChild(row);
                 
-                // Add day number
-                const dayNumber = document.createElement('div');
-                dayNumber.className = 'day-number';
-                dayNumber.textContent = day;
-                dayElement.appendChild(dayNumber);
-                
-                // Add status indicator
-                const statusIndicator = document.createElement('div');
-                statusIndicator.className = 'day-status';
-                
-                if (status === 'haid') {
-                    statusIndicator.textContent = 'Haid';
-                } else if (status === 'istihadah') {
-                    statusIndicator.textContent = 'Istihadhah';
-                } else if (status === 'prediction') {
-                    statusIndicator.textContent = 'Prediksi';
-                } else if (status === 'manual') {
-                    statusIndicator.textContent = 'Manual';
+                // Stop creating rows if all days have been added
+                if (date > daysInMonth) {
+                    break;
                 }
-                
-                dayElement.appendChild(statusIndicator);
-                
-                // Add click event for manual marking
-                dayElement.addEventListener('click', () => toggleManualPeriod(dateStr));
-                
-                calendarGrid.appendChild(dayElement);
             }
         }
         
@@ -846,110 +989,35 @@
             
             localStorage.setItem('bikinkanManualPeriods', JSON.stringify(manualPeriods));
             generateCalendar();
-            updateCurrentStatus();
+            updateTodayStatus();
         }
         
-        function updateCurrentStatus() {
+        function updateTodayStatus() {
             const today = new Date();
             const status = getDateStatus(today);
             
             let statusText = '';
-            let statusClass = '';
-            let additionalInfo = '';
+            let statusDetails = '';
             
             if (status === 'haid') {
                 statusText = 'Haid Biasa';
-                statusClass = 'haid';
-                additionalInfo = '<p>Anda sedang dalam masa haid biasa. Tetap jaga kebersihan dan kesehatan.</p>';
+                statusDetails = 'Anda sedang dalam masa haid biasa. Tetap jaga kebersihan dan kesehatan.';
             } else if (status === 'istihadah') {
                 statusText = 'Haid Istihadhah';
-                statusClass = 'istihadah';
-                additionalInfo = `
-                    <div class="istihadah-info">
-                        <h4>Informasi Istihadhah</h4>
-                        <p><strong>Saran Konsumsi:</strong></p>
-                        <ul>
-                            <li>Konsumsi makanan kaya zat besi (daging, hati, bayam)</li>
-                            <li>Minum air jahe atau kurma untuk menguatkan rahim</li>
-                            <li>Perbanyak makanan bergizi untuk mengembalikan energi</li>
-                        </ul>
-                        <p><strong>Pantangan dalam Islam:</strong></p>
-                        <ul>
-                            <li>Wajib shalat dengan berwudhu setiap waktu</li>
-                            <li>Boleh berpuasa</li>
-                            <li>Boleh membaca Al-Quran</li>
-                            <li>Boleh berhubungan suami istri</li>
-                            <li>Disarankan mandi setelah darah berhenti</li>
-                        </ul>
-                    </div>
-                `;
+                statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan saran dan pantangan yang diberikan.';
             } else if (status === 'prediction') {
                 statusText = 'Masa Suci (Prediksi Haid Mendatang)';
-                statusClass = 'suci';
+                statusDetails = 'Masa suci. Prediksi haid berikutnya akan segera dimulai.';
             } else if (status === 'manual') {
                 statusText = 'Haid (Manual)';
-                statusClass = 'haid';
+                statusDetails = 'Anda sedang dalam masa haid (ditandai secara manual).';
             } else {
                 statusText = 'Masa Suci';
-                statusClass = 'suci';
+                statusDetails = 'Anda sedang dalam masa suci. Semua ibadah dapat dilakukan secara normal.';
             }
             
-            currentStatusElement.textContent = statusText;
-            currentStatusElement.className = `current-status ${statusClass}`;
-            
-            // Update prediction info
-            updatePredictionInfo();
-            
-            // Add additional info if needed
-            if (additionalInfo) {
-                currentStatusElement.insertAdjacentHTML('afterend', additionalInfo);
-            }
-        }
-        
-        function updatePredictionInfo() {
-            if (periodHistory.length < 2) {
-                predictionInfoElement.innerHTML = '<p>Catat minimal 2 siklus untuk prediksi</p>';
-                return;
-            }
-            
-            // Calculate average cycle length
-            let totalDays = 0;
-            for (let i = 1; i < periodHistory.length; i++) {
-                const prevStart = new Date(periodHistory[i-1].startDate);
-                const currStart = new Date(periodHistory[i].startDate);
-                const diffTime = Math.abs(currStart - prevStart);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                totalDays += diffDays;
-            }
-            
-            const avgCycleLength = Math.round(totalDays / (periodHistory.length - 1));
-            
-            // Get last period start date
-            const lastPeriod = periodHistory[periodHistory.length - 1];
-            const lastStart = new Date(lastPeriod.startDate);
-            
-            // Calculate next predicted period
-            const nextPredictedStart = new Date(lastStart);
-            nextPredictedStart.setDate(nextPredictedStart.getDate() + avgCycleLength);
-            
-            // Calculate predicted period end (using average duration)
-            let totalDuration = 0;
-            periodHistory.forEach(period => totalDuration += period.duration);
-            const avgDuration = Math.round(totalDuration / periodHistory.length);
-            
-            const nextPredictedEnd = new Date(nextPredictedStart);
-            nextPredictedEnd.setDate(nextPredictedEnd.getDate() + avgDuration - 1);
-            
-            // Format dates
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            const startFormatted = nextPredictedStart.toLocaleDateString('id-ID', options);
-            const endFormatted = nextPredictedEnd.toLocaleDateString('id-ID', options);
-            
-            predictionInfoElement.innerHTML = `
-                <p><strong>Prediksi Haid Berikutnya:</strong></p>
-                <p>${startFormatted} - ${endFormatted}</p>
-                <p>Rata-rata siklus: ${avgCycleLength} hari</p>
-            `;
+            todayStatusElement.textContent = statusText;
+            todayDetailsElement.textContent = statusDetails;
         }
         
         function changeMonth(direction) {
@@ -970,8 +1038,9 @@
             currentDate = new Date();
             currentMonth = currentDate.getMonth();
             currentYear = currentDate.getFullYear();
+            updateCurrentDate();
             generateCalendar();
-            updateCurrentStatus();
+            updateTodayStatus();
         }
         
         function displayHistory() {
@@ -986,8 +1055,8 @@
             historyList.innerHTML = sortedHistory.map(period => `
                 <div class="history-item">
                     <div>
-                        <span class="date-display">${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
-                        <div>${period.duration} hari (${period.cycleType === 'regular' ? 'Haid Biasa' : 'Haid Istihadhah'})</div>
+                        <div class="history-date">${formatDate(period.startDate)} - ${formatDate(period.endDate)}</div>
+                        <div class="history-duration">${period.duration} hari (${period.cycleType === 'regular' ? 'Haid Biasa' : 'Haid Istihadhah'})</div>
                     </div>
                     <div class="history-actions">
                         <button class="btn-danger" onclick="deletePeriod(${period.id})">Hapus</button>
@@ -1001,7 +1070,7 @@
                 periodHistory = periodHistory.filter(period => period.id !== id);
                 localStorage.setItem('bikinkanHistory', JSON.stringify(periodHistory));
                 generateCalendar();
-                updateCurrentStatus();
+                updateTodayStatus();
                 displayHistory();
             }
         }
@@ -1013,7 +1082,7 @@
                 localStorage.setItem('bikinkanHistory', JSON.stringify(periodHistory));
                 localStorage.setItem('bikinkanManualPeriods', JSON.stringify(manualPeriods));
                 generateCalendar();
-                updateCurrentStatus();
+                updateTodayStatus();
                 displayHistory();
             }
         }
