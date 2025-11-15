@@ -586,6 +586,111 @@
             color: #777;
             font-size: 0.9rem;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+            width: auto;
+        }
+
+        .symptom-category {
+            margin-bottom: 20px;
+        }
+
+        .symptom-category h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .symptom-category-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .symptom-category-option {
+            padding: 8px 15px;
+            background: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .symptom-category-option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .selected-symptoms {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(142, 68, 173, 0.1);
+            border-radius: 10px;
+        }
+
+        .selected-symptoms h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .selected-symptoms-list {
+            list-style-type: none;
+        }
+
+        .selected-symptoms-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(142, 68, 173, 0.2);
+        }
+
+        .selected-symptoms-list li:last-child {
+            border-bottom: none;
+        }
         
         @media (max-width: 768px) {
             .main-content {
@@ -679,32 +784,14 @@
                 <div class="card">
                     <h2><i class="fas fa-notes-medical"></i> Gejala</h2>
                     <div class="track-options">
-                        <button class="track-btn" data-symptom="mood">
-                            <i class="fas fa-brain"></i>
-                            <span>Mood</span>
+                        <button class="track-btn" id="trackSymptomsBtn">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Catat Gejala</span>
                         </button>
-                        <button class="track-btn" data-symptom="blood">
-                            <i class="fas fa-tint"></i>
-                            <span>Darah</span>
-                        </button>
-                        <button class="track-btn" data-symptom="pain">
-                            <i class="fas fa-pain"></i>
-                            <span>Nyeri</span>
-                        </button>
-                        <button class="track-btn" data-symptom="food">
+                        <button class="track-btn" id="viewFoodRecommendationBtn">
                             <i class="fas fa-utensils"></i>
-                            <span>Makanan</span>
+                            <span>Rekomendasi Makanan</span>
                         </button>
-                    </div>
-                    
-                    <div class="symptom-form" id="symptomForm">
-                        <div class="form-group">
-                            <label id="symptomFormTitle">Pilih Gejala</label>
-                            <div class="symptom-options" id="symptomOptions">
-                                <!-- Options will be generated here -->
-                            </div>
-                        </div>
-                        <button id="saveSymptom">Simpan Gejala</button>
                     </div>
                     
                     <div class="food-recommendation" id="foodRecommendation">
@@ -814,24 +901,75 @@
         </footer>
     </div>
 
+    <!-- Symptom Modal -->
+    <div class="modal" id="symptomModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Catat Gejala Harian</h3>
+                <button class="close-modal" id="closeSymptomModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="selectedDateText">Tanggal: 25 November 2024</p>
+                
+                <div class="symptom-category">
+                    <h4>Mood</h4>
+                    <div class="symptom-category-options" id="moodOptions">
+                        <div class="symptom-category-option" data-value="Biasa saja">Biasa saja</div>
+                        <div class="symptom-category-option" data-value="Sedih">Sedih</div>
+                        <div class="symptom-category-option" data-value="Cemas">Cemas</div>
+                        <div class="symptom-category-option" data-value="Marah">Marah</div>
+                        <div class="symptom-category-option" data-value="Bahagia">Bahagia</div>
+                        <div class="symptom-category-option" data-value="Stres">Stres</div>
+                    </div>
+                </div>
+                
+                <div class="symptom-category">
+                    <h4>Volume Darah</h4>
+                    <div class="symptom-category-options" id="bloodOptions">
+                        <div class="symptom-category-option" data-value="Sedikit">Sedikit</div>
+                        <div class="symptom-category-option" data-value="Sedang">Sedang</div>
+                        <div class="symptom-category-option" data-value="Banyak">Banyak</div>
+                        <div class="symptom-category-option" data-value="Sangat Banyak">Sangat Banyak</div>
+                        <div class="symptom-category-option" data-value="Bercak">Bercak</div>
+                    </div>
+                </div>
+                
+                <div class="symptom-category">
+                    <h4>Tingkat Nyeri</h4>
+                    <div class="symptom-category-options" id="painOptions">
+                        <div class="symptom-category-option" data-value="Tidak ada">Tidak ada</div>
+                        <div class="symptom-category-option" data-value="Ringan">Ringan</div>
+                        <div class="symptom-category-option" data-value="Sedang">Sedang</div>
+                        <div class="symptom-category-option" data-value="Berat">Berat</div>
+                        <div class="symptom-category-option" data-value="Sangat Berat">Sangat Berat</div>
+                    </div>
+                </div>
+                
+                <div class="selected-symptoms">
+                    <h4>Gejala Terpilih</h4>
+                    <ul class="selected-symptoms-list" id="selectedSymptomsList">
+                        <!-- Selected symptoms will appear here -->
+                    </ul>
+                </div>
+                
+                <button id="saveSymptoms">Simpan Gejala</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Data storage
         let periodHistory = JSON.parse(localStorage.getItem('periodHistory')) || [];
         let manualPeriods = JSON.parse(localStorage.getItem('manualPeriods')) || [];
-        let symptoms = JSON.parse(localStorage.getItem('symptoms')) || [];
+        let symptoms = JSON.parse(localStorage.getItem('symptoms')) || {};
         
         // Calendar state
         let currentDate = new Date();
         let currentMonth = currentDate.getMonth();
         let currentYear = currentDate.getFullYear();
+        let selectedDate = null;
         
-        // Symptom data
-        const symptomOptions = {
-            mood: ["Biasa saja", "Sedih", "Cemas", "Marah", "Bahagia", "Stres"],
-            blood: ["Sedikit", "Sedang", "Banyak", "Sangat Banyak", "Bercak"],
-            pain: ["Tidak ada", "Ringan", "Sedang", "Berat", "Sangat Berat"]
-        };
-        
+        // Food recommendations
         const foodRecommendations = {
             mood: {
                 "Sedih": ["Dark chocolate", "Kacang almond", "Ikan salmon", "Alpukat"],
@@ -867,13 +1005,16 @@
         const endDateInput = document.getElementById('endDate');
         const historyList = document.getElementById('historyList');
         const clearHistoryBtn = document.getElementById('clearHistory');
-        const symptomForm = document.getElementById('symptomForm');
-        const symptomFormTitle = document.getElementById('symptomFormTitle');
-        const symptomOptionsElement = document.getElementById('symptomOptions');
-        const saveSymptomBtn = document.getElementById('saveSymptom');
         const foodRecommendationElement = document.getElementById('foodRecommendation');
         const foodRecommendationText = document.getElementById('foodRecommendationText');
         const foodList = document.getElementById('foodList');
+        const trackSymptomsBtn = document.getElementById('trackSymptomsBtn');
+        const viewFoodRecommendationBtn = document.getElementById('viewFoodRecommendationBtn');
+        const symptomModal = document.getElementById('symptomModal');
+        const closeSymptomModal = document.getElementById('closeSymptomModal');
+        const selectedDateText = document.getElementById('selectedDateText');
+        const selectedSymptomsList = document.getElementById('selectedSymptomsList');
+        const saveSymptomsBtn = document.getElementById('saveSymptoms');
         
         // Set default dates to today
         const today = new Date().toISOString().split('T')[0];
@@ -887,20 +1028,10 @@
         nextMonthBtn.addEventListener('click', () => changeMonth(1));
         todayBtn.addEventListener('click', goToToday);
         clearHistoryBtn.addEventListener('click', clearAllHistory);
-        
-        // Track button events
-        document.querySelectorAll('.track-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const symptomType = this.getAttribute('data-symptom');
-                if (symptomType === 'food') {
-                    showFoodRecommendation();
-                } else {
-                    showSymptomForm(symptomType);
-                }
-            });
-        });
-        
-        saveSymptomBtn.addEventListener('click', saveSymptom);
+        trackSymptomsBtn.addEventListener('click', openSymptomModal);
+        viewFoodRecommendationBtn.addEventListener('click', showFoodRecommendation);
+        closeSymptomModal.addEventListener('click', closeModal);
+        saveSymptomsBtn.addEventListener('click', saveSymptoms);
         
         // Initialize
         updateCurrentDate();
@@ -1045,8 +1176,15 @@
                         
                         dayElement.appendChild(statusIndicator);
                         
-                        // Add click event for manual marking
-                        cell.addEventListener('click', () => toggleManualPeriod(dateStr));
+                        // Add click event for manual marking and symptoms
+                        cell.addEventListener('click', () => {
+                            if (status === 'haid' || status === 'istihadah' || status === 'manual') {
+                                selectedDate = dateStr;
+                                openSymptomModal(dateStr);
+                            } else {
+                                toggleManualPeriod(dateStr);
+                            }
+                        });
                         
                         cell.appendChild(dayElement);
                         date++;
@@ -1091,7 +1229,7 @@
         }
         
         function isPredictedPeriod(date) {
-            if (periodHistory.length < 2) return false;
+            if (periodHistory.length === 0) return false;
             
             // Get last period
             const lastPeriod = periodHistory[periodHistory.length - 1];
@@ -1210,72 +1348,124 @@
             if (confirm('Apakah Anda yakin ingin menghapus SEMUA riwayat haid? Tindakan ini tidak dapat dibatalkan.')) {
                 periodHistory = [];
                 manualPeriods = [];
+                symptoms = {};
                 localStorage.setItem('periodHistory', JSON.stringify(periodHistory));
                 localStorage.setItem('manualPeriods', JSON.stringify(manualPeriods));
+                localStorage.setItem('symptoms', JSON.stringify(symptoms));
                 generateCalendar();
                 updateTodayStatus();
                 displayHistory();
+                updateFoodRecommendation();
             }
         }
         
-        function showSymptomForm(symptomType) {
-            // Set form title
-            const titles = {
-                mood: "Bagaimana mood Anda hari ini?",
-                blood: "Bagaimana volume darah haid?",
-                pain: "Bagaimana tingkat nyeri yang dirasakan?"
-            };
+        function openSymptomModal(dateStr = null) {
+            if (dateStr) {
+                selectedDate = dateStr;
+            } else {
+                // If no date specified, use today
+                selectedDate = new Date().toISOString().split('T')[0];
+            }
             
-            symptomFormTitle.textContent = titles[symptomType] || "Pilih gejala";
-            
-            // Clear previous options
-            symptomOptionsElement.innerHTML = '';
-            
-            // Add options
-            symptomOptions[symptomType].forEach(option => {
-                const optionElement = document.createElement('div');
-                optionElement.className = 'symptom-option';
-                optionElement.textContent = option;
-                optionElement.addEventListener('click', function() {
-                    // Remove selected class from all options
-                    document.querySelectorAll('.symptom-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
-                    // Add selected class to clicked option
-                    this.classList.add('selected');
-                });
-                symptomOptionsElement.appendChild(optionElement);
+            // Reset selected options
+            document.querySelectorAll('.symptom-category-option').forEach(option => {
+                option.classList.remove('selected');
             });
             
-            // Set data attribute to track symptom type
-            symptomForm.setAttribute('data-symptom-type', symptomType);
+            // Update selected date text
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            selectedDateText.textContent = `Tanggal: ${new Date(selectedDate).toLocaleDateString('id-ID', options)}`;
             
-            // Show form
-            symptomForm.classList.add('active');
+            // Load existing symptoms for this date if any
+            if (symptoms[selectedDate]) {
+                symptoms[selectedDate].forEach(symptom => {
+                    const categoryOptions = document.querySelectorAll(`#${symptom.category}Options .symptom-category-option`);
+                    categoryOptions.forEach(option => {
+                        if (option.getAttribute('data-value') === symptom.value) {
+                            option.classList.add('selected');
+                        }
+                    });
+                });
+            }
+            
+            // Update selected symptoms list
+            updateSelectedSymptomsList();
+            
+            // Show modal
+            symptomModal.classList.add('active');
+            
+            // Add event listeners to symptom options
+            document.querySelectorAll('.symptom-category-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options in the same category
+                    const category = this.parentElement.id.replace('Options', '');
+                    document.querySelectorAll(`#${category}Options .symptom-category-option`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Update selected symptoms list
+                    updateSelectedSymptomsList();
+                });
+            });
         }
         
-        function saveSymptom() {
-            const symptomType = symptomForm.getAttribute('data-symptom-type');
-            const selectedOption = symptomOptionsElement.querySelector('.selected');
+        function closeModal() {
+            symptomModal.classList.remove('active');
+        }
+        
+        function updateSelectedSymptomsList() {
+            selectedSymptomsList.innerHTML = '';
             
-            if (!selectedOption) {
-                alert('Pilih salah satu gejala terlebih dahulu');
+            const categories = ['mood', 'blood', 'pain'];
+            let hasSymptoms = false;
+            
+            categories.forEach(category => {
+                const selectedOption = document.querySelector(`#${category}Options .symptom-category-option.selected`);
+                if (selectedOption) {
+                    hasSymptoms = true;
+                    const li = document.createElement('li');
+                    li.textContent = `${category === 'mood' ? 'Mood' : category === 'blood' ? 'Volume Darah' : 'Tingkat Nyeri'}: ${selectedOption.getAttribute('data-value')}`;
+                    selectedSymptomsList.appendChild(li);
+                }
+            });
+            
+            if (!hasSymptoms) {
+                const li = document.createElement('li');
+                li.textContent = 'Belum ada gejala yang dipilih';
+                selectedSymptomsList.appendChild(li);
+            }
+        }
+        
+        function saveSymptoms() {
+            if (!selectedDate) return;
+            
+            const categories = ['mood', 'blood', 'pain'];
+            const selectedSymptoms = [];
+            
+            categories.forEach(category => {
+                const selectedOption = document.querySelector(`#${category}Options .symptom-category-option.selected`);
+                if (selectedOption) {
+                    selectedSymptoms.push({
+                        category: category,
+                        value: selectedOption.getAttribute('data-value')
+                    });
+                }
+            });
+            
+            if (selectedSymptoms.length === 0) {
+                alert('Pilih setidaknya satu gejala sebelum menyimpan');
                 return;
             }
             
-            const symptomValue = selectedOption.textContent;
-            
-            // Save symptom
-            symptoms.push({
-                type: symptomType,
-                value: symptomValue,
-                date: new Date().toISOString()
-            });
-            
+            // Save symptoms
+            symptoms[selectedDate] = selectedSymptoms;
             localStorage.setItem('symptoms', JSON.stringify(symptoms));
             
-            // Hide form
-            symptomForm.classList.remove('active');
+            // Close modal
+            closeModal();
             
             // Update food recommendation
             updateFoodRecommendation();
@@ -1284,31 +1474,30 @@
         }
         
         function updateFoodRecommendation() {
-            if (symptoms.length === 0) {
+            // Get all symptoms
+            const allSymptoms = Object.values(symptoms).flat();
+            
+            if (allSymptoms.length === 0) {
                 foodRecommendationElement.style.display = 'none';
                 return;
             }
             
-            // Get latest symptoms
-            const latestSymptoms = {};
-            symptoms.forEach(symptom => {
-                latestSymptoms[symptom.type] = symptom.value;
-            });
-            
             // Generate food recommendations based on symptoms
             let recommendedFoods = [];
             
-            if (latestSymptoms.mood && latestSymptoms.mood !== "Biasa saja" && latestSymptoms.mood !== "Bahagia") {
-                recommendedFoods = recommendedFoods.concat(foodRecommendations.mood[latestSymptoms.mood] || []);
-            }
-            
-            if (latestSymptoms.blood && (latestSymptoms.blood === "Banyak" || latestSymptoms.blood === "Sangat Banyak")) {
-                recommendedFoods = recommendedFoods.concat(foodRecommendations.blood[latestSymptoms.blood] || []);
-            }
-            
-            if (latestSymptoms.pain && latestSymptoms.pain !== "Tidak ada" && latestSymptoms.pain !== "Ringan") {
-                recommendedFoods = recommendedFoods.concat(foodRecommendations.pain[latestSymptoms.pain] || []);
-            }
+            allSymptoms.forEach(symptom => {
+                if (symptom.category === 'mood' && symptom.value !== "Biasa saja" && symptom.value !== "Bahagia") {
+                    recommendedFoods = recommendedFoods.concat(foodRecommendations.mood[symptom.value] || []);
+                }
+                
+                if (symptom.category === 'blood' && (symptom.value === "Banyak" || symptom.value === "Sangat Banyak")) {
+                    recommendedFoods = recommendedFoods.concat(foodRecommendations.blood[symptom.value] || []);
+                }
+                
+                if (symptom.category === 'pain' && symptom.value !== "Tidak ada" && symptom.value !== "Ringan") {
+                    recommendedFoods = recommendedFoods.concat(foodRecommendations.pain[symptom.value] || []);
+                }
+            });
             
             // Remove duplicates
             recommendedFoods = [...new Set(recommendedFoods)];
@@ -1327,6 +1516,8 @@
             updateFoodRecommendation();
             if (foodRecommendationElement.style.display === 'block') {
                 foodRecommendationElement.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Belum ada gejala yang dicatat. Silakan catat gejala terlebih dahulu.');
             }
         }
         
