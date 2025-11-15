@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bikinkan - Kalender Haid Islami</title>
+    <title>Bikinkan - Muslim Period Tracker</title>
     <style>
         :root {
             --primary: #8e44ad;
@@ -16,7 +16,8 @@
             --haid-color: #e74c3c;
             --istihadah-color: #f39c12;
             --suci-color: #27ae60;
-            --prediction-color: #3498db;
+            --prediction-color: #f1c40f;
+            --manual-color: #e74c3c;
         }
         
         * {
@@ -30,12 +31,79 @@
             background-color: #f9f9f9;
             color: var(--dark);
             line-height: 1.6;
+            overflow-x: hidden;
         }
         
+        /* Opening Screen Styles */
+        .opening-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .opening-screen.hidden {
+            opacity: 0;
+            transform: translateY(-100%);
+            pointer-events: none;
+        }
+        
+        .logo {
+            font-size: 3.5rem;
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-name {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 300;
+        }
+        
+        .enter-btn {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .enter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* Main App Styles */
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         header {
@@ -122,6 +190,14 @@
             background-color: #c0392b;
         }
         
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
         .calendar-container {
             display: grid;
             grid-template-columns: 1fr 300px;
@@ -189,12 +265,12 @@
         }
         
         .calendar-day.haid {
-            background-color: rgba(231, 76, 60, 0.2);
+            background-color: rgba(231, 76, 60, 0.3);
             border: 2px solid var(--haid-color);
         }
         
         .calendar-day.istihadah {
-            background-color: rgba(243, 156, 18, 0.2);
+            background-color: rgba(243, 156, 18, 0.3);
             border: 2px solid var(--istihadah-color);
         }
         
@@ -203,8 +279,13 @@
         }
         
         .calendar-day.prediction {
-            background-color: rgba(52, 152, 219, 0.1);
+            background-color: rgba(241, 196, 15, 0.2);
             border: 1px dashed var(--prediction-color);
+        }
+        
+        .calendar-day.manual {
+            background-color: rgba(231, 76, 60, 0.4);
+            border: 2px solid var(--manual-color);
         }
         
         .calendar-day.other-month {
@@ -265,6 +346,10 @@
         
         .legend-color.prediction {
             background-color: var(--prediction-color);
+        }
+        
+        .legend-color.manual {
+            background-color: var(--manual-color);
         }
         
         .current-status {
@@ -337,6 +422,27 @@
             font-size: 0.8rem;
         }
         
+        .manual-mode-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid var(--haid-color);
+        }
+        
+        .istihadah-info {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: rgba(243, 156, 18, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--istihadah-color);
+        }
+        
+        .istihadah-info h4 {
+            color: var(--istihadah-color);
+            margin-bottom: 10px;
+        }
+        
         footer {
             text-align: center;
             margin-top: 40px;
@@ -361,14 +467,31 @@
             .card {
                 padding: 15px;
             }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .app-name {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Opening Screen -->
+    <div class="opening-screen" id="openingScreen">
+        <div class="logo">🩸</div>
+        <h1 class="app-name">Bikinkan</h1>
+        <p style="color: white; margin-bottom: 30px; text-align: center;">Muslim Period Tracker</p>
+        <button class="enter-btn" id="enterBtn">Masuk ke Aplikasi</button>
+    </div>
+    
+    <!-- Main App -->
+    <div class="container" id="mainApp">
         <header>
             <h1>Bikinkan</h1>
-            <p class="subtitle">Kalender Haid Islami dengan Prediksi</p>
+            <p class="subtitle">Muslim Period Tracker - Pelacak Siklus Haid Islami</p>
         </header>
         
         <div class="card">
@@ -386,6 +509,10 @@
                 
                 <button type="submit">Simpan Data Haid</button>
             </form>
+            
+            <div class="manual-mode-info">
+                <p><strong>Mode Manual:</strong> Klik pada tanggal di kalender untuk menandai hari haid secara manual.</p>
+            </div>
         </div>
         
         <div class="calendar-container">
@@ -420,11 +547,11 @@
                     <div class="legend">
                         <div class="legend-item">
                             <div class="legend-color haid"></div>
-                            <span>Haid Biasa</span>
+                            <span>Haid Biasa (7-15 hari)</span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color istihadah"></div>
-                            <span>Istihadah</span>
+                            <span>Haid Istihadhah (>15 hari)</span>
                         </div>
                         <div class="legend-item">
                             <div class="legend-color suci"></div>
@@ -433,6 +560,10 @@
                         <div class="legend-item">
                             <div class="legend-color prediction"></div>
                             <span>Prediksi Haid</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color manual"></div>
+                            <span>Haid Manual</span>
                         </div>
                     </div>
                 </div>
@@ -451,22 +582,23 @@
             <div class="info-title">Informasi Penting</div>
             <p>Bikinkan membantu wanita muslimah mencatat dan menganalisis siklus haid berdasarkan ketentuan Islam:</p>
             <ul style="margin-left: 20px; margin-top: 10px;">
-                <li>Masa haid minimum: 1 hari, maksimum: 15 hari</li>
+                <li>Masa haid normal: 7-15 hari</li>
+                <li>Masa haid istihadhah: lebih dari 15 hari</li>
                 <li>Masa suci minimum: 15 hari</li>
-                <li>Istihadah adalah darah di luar kebiasaan haid</li>
-                <li>Aplikasi ini mendeteksi otomatis jenis siklus berdasarkan pola haid sebelumnya</li>
+                <li>Aplikasi ini mendeteksi otomatis jenis siklus berdasarkan durasi haid</li>
                 <li>Prediksi haid berikutnya berdasarkan rata-rata siklus sebelumnya</li>
             </ul>
         </div>
         
         <footer>
-            <p>Bikinkan &copy; 2023 - Kalender Haid Islami</p>
+            <p>Bikinkan &copy; 2023 - Muslim Period Tracker</p>
         </footer>
     </div>
 
     <script>
         // Data storage
         let periodHistory = JSON.parse(localStorage.getItem('bikinkanHistory')) || [];
+        let manualPeriods = JSON.parse(localStorage.getItem('bikinkanManualPeriods')) || [];
         
         // Calendar state
         let currentDate = new Date();
@@ -474,6 +606,9 @@
         let currentYear = currentDate.getFullYear();
         
         // DOM Elements
+        const openingScreen = document.getElementById('openingScreen');
+        const enterBtn = document.getElementById('enterBtn');
+        const mainApp = document.getElementById('mainApp');
         const periodForm = document.getElementById('periodForm');
         const startDateInput = document.getElementById('startDate');
         const endDateInput = document.getElementById('endDate');
@@ -493,6 +628,7 @@
         endDateInput.value = today;
         
         // Event Listeners
+        enterBtn.addEventListener('click', enterApp);
         periodForm.addEventListener('submit', savePeriodData);
         prevMonthBtn.addEventListener('click', () => changeMonth(-1));
         nextMonthBtn.addEventListener('click', () => changeMonth(1));
@@ -505,6 +641,13 @@
         displayHistory();
         
         // Functions
+        function enterApp() {
+            openingScreen.classList.add('hidden');
+            setTimeout(() => {
+                mainApp.classList.add('visible');
+            }, 500);
+        }
+        
         function savePeriodData(e) {
             e.preventDefault();
             
@@ -522,18 +665,8 @@
             const end = new Date(endDate);
             const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
             
-            // Auto-detect cycle type based on history
-            let cycleType = 'regular';
-            if (periodHistory.length > 0) {
-                const lastPeriod = periodHistory[periodHistory.length - 1];
-                const lastEndDate = new Date(lastPeriod.endDate);
-                const daysBetween = Math.ceil((start - lastEndDate) / (1000 * 60 * 60 * 24));
-                
-                // If less than 15 days between periods, mark as istihadah
-                if (daysBetween < 15) {
-                    cycleType = 'istihadah';
-                }
-            }
+            // Auto-detect cycle type based on duration
+            let cycleType = duration <= 15 ? 'regular' : 'istihadah';
             
             // Add to history
             const periodData = {
@@ -625,12 +758,17 @@
                 if (status === 'haid') {
                     statusIndicator.textContent = 'Haid';
                 } else if (status === 'istihadah') {
-                    statusIndicator.textContent = 'Istihadah';
+                    statusIndicator.textContent = 'Istihadhah';
                 } else if (status === 'prediction') {
                     statusIndicator.textContent = 'Prediksi';
+                } else if (status === 'manual') {
+                    statusIndicator.textContent = 'Manual';
                 }
                 
                 dayElement.appendChild(statusIndicator);
+                
+                // Add click event for manual marking
+                dayElement.addEventListener('click', () => toggleManualPeriod(dateStr));
                 
                 calendarGrid.appendChild(dayElement);
             }
@@ -638,6 +776,11 @@
         
         function getDateStatus(date) {
             const dateStr = date.toISOString().split('T')[0];
+            
+            // Check if date is manually marked
+            if (manualPeriods.includes(dateStr)) {
+                return 'manual';
+            }
             
             // Check if date is within a recorded period
             for (const period of periodHistory) {
@@ -692,22 +835,60 @@
             return date >= nextPredictedStart && date <= nextPredictedEnd;
         }
         
+        function toggleManualPeriod(dateStr) {
+            if (manualPeriods.includes(dateStr)) {
+                // Remove from manual periods
+                manualPeriods = manualPeriods.filter(d => d !== dateStr);
+            } else {
+                // Add to manual periods
+                manualPeriods.push(dateStr);
+            }
+            
+            localStorage.setItem('bikinkanManualPeriods', JSON.stringify(manualPeriods));
+            generateCalendar();
+            updateCurrentStatus();
+        }
+        
         function updateCurrentStatus() {
             const today = new Date();
             const status = getDateStatus(today);
             
             let statusText = '';
             let statusClass = '';
+            let additionalInfo = '';
             
             if (status === 'haid') {
                 statusText = 'Haid Biasa';
                 statusClass = 'haid';
+                additionalInfo = '<p>Anda sedang dalam masa haid biasa. Tetap jaga kebersihan dan kesehatan.</p>';
             } else if (status === 'istihadah') {
-                statusText = 'Istihadah';
+                statusText = 'Haid Istihadhah';
                 statusClass = 'istihadah';
+                additionalInfo = `
+                    <div class="istihadah-info">
+                        <h4>Informasi Istihadhah</h4>
+                        <p><strong>Saran Konsumsi:</strong></p>
+                        <ul>
+                            <li>Konsumsi makanan kaya zat besi (daging, hati, bayam)</li>
+                            <li>Minum air jahe atau kurma untuk menguatkan rahim</li>
+                            <li>Perbanyak makanan bergizi untuk mengembalikan energi</li>
+                        </ul>
+                        <p><strong>Pantangan dalam Islam:</strong></p>
+                        <ul>
+                            <li>Wajib shalat dengan berwudhu setiap waktu</li>
+                            <li>Boleh berpuasa</li>
+                            <li>Boleh membaca Al-Quran</li>
+                            <li>Boleh berhubungan suami istri</li>
+                            <li>Disarankan mandi setelah darah berhenti</li>
+                        </ul>
+                    </div>
+                `;
             } else if (status === 'prediction') {
                 statusText = 'Masa Suci (Prediksi Haid Mendatang)';
                 statusClass = 'suci';
+            } else if (status === 'manual') {
+                statusText = 'Haid (Manual)';
+                statusClass = 'haid';
             } else {
                 statusText = 'Masa Suci';
                 statusClass = 'suci';
@@ -718,6 +899,11 @@
             
             // Update prediction info
             updatePredictionInfo();
+            
+            // Add additional info if needed
+            if (additionalInfo) {
+                currentStatusElement.insertAdjacentHTML('afterend', additionalInfo);
+            }
         }
         
         function updatePredictionInfo() {
@@ -801,7 +987,7 @@
                 <div class="history-item">
                     <div>
                         <span class="date-display">${formatDate(period.startDate)} - ${formatDate(period.endDate)}</span>
-                        <div>${period.duration} hari (${period.cycleType === 'regular' ? 'Haid Biasa' : 'Istihadah'})</div>
+                        <div>${period.duration} hari (${period.cycleType === 'regular' ? 'Haid Biasa' : 'Haid Istihadhah'})</div>
                     </div>
                     <div class="history-actions">
                         <button class="btn-danger" onclick="deletePeriod(${period.id})">Hapus</button>
@@ -823,7 +1009,9 @@
         function clearAllHistory() {
             if (confirm('Apakah Anda yakin ingin menghapus SEMUA riwayat haid? Tindakan ini tidak dapat dibatalkan.')) {
                 periodHistory = [];
+                manualPeriods = [];
                 localStorage.setItem('bikinkanHistory', JSON.stringify(periodHistory));
+                localStorage.setItem('bikinkanManualPeriods', JSON.stringify(manualPeriods));
                 generateCalendar();
                 updateCurrentStatus();
                 displayHistory();
