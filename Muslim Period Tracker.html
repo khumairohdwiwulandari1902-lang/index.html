@@ -189,44 +189,17 @@
             padding: 15px;
             border-radius: 10px;
             background-color: rgba(142, 68, 173, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .today-status.haid {
-            background-color: rgba(231, 76, 60, 0.1);
-        }
-        
-        .today-status.istihadah {
-            background-color: rgba(243, 156, 18, 0.1);
         }
         
         .status-icon {
             font-size: 2rem;
             color: var(--primary);
-            transition: all 0.3s ease;
-        }
-        
-        .status-icon.haid {
-            color: var(--haid-color);
-        }
-        
-        .status-icon.istihadah {
-            color: var(--istihadah-color);
         }
         
         .status-info h3 {
             font-size: 1.2rem;
             margin-bottom: 5px;
             color: var(--primary);
-            transition: all 0.3s ease;
-        }
-        
-        .status-info h3.haid {
-            color: var(--haid-color);
-        }
-        
-        .status-info h3.istihadah {
-            color: var(--istihadah-color);
         }
         
         .status-info p {
@@ -779,13 +752,13 @@
             <div class="left-panel">
                 <div class="card">
                     <h2><i class="fas fa-calendar-day"></i> Hari Ini</h2>
-                    <div class="today-status" id="todayStatusContainer">
-                        <div class="status-icon" id="statusIcon">
+                    <div class="today-status">
+                        <div class="status-icon">
                             <i class="fas fa-heartbeat"></i>
                         </div>
                         <div class="status-info">
                             <h3 id="todayStatus">Masa Suci</h3>
-                            <p id="todayDetails">Belum ada data haid yang dicatat</p>
+                            <p id="todayDetails">Hari ke-12 dari siklus 28 hari</p>
                         </div>
                     </div>
                     
@@ -1055,8 +1028,6 @@
         const currentDateElement = document.getElementById('currentDate');
         const todayStatusElement = document.getElementById('todayStatus');
         const todayDetailsElement = document.getElementById('todayDetails');
-        const todayStatusContainer = document.getElementById('todayStatusContainer');
-        const statusIcon = document.getElementById('statusIcon');
         const currentMonthElement = document.getElementById('currentMonth');
         const calendarBody = document.getElementById('calendarBody');
         const prevMonthBtn = document.getElementById('prevMonth');
@@ -1094,4 +1065,684 @@
         enterBtn.addEventListener('click', enterApp);
         periodForm.addEventListener('submit', savePeriodData);
         prevMonthBtn.addEventListener('click', () => changeMonth(-1));
-        nextMonthBtn.addEventListener('
+        nextMonthBtn.addEventListener('click', () => changeMonth(1));
+        todayBtn.addEventListener('click', goToToday);
+        clearHistoryBtn.addEventListener('click', clearAllHistory);
+        trackSymptomsBtn.addEventListener('click', openSymptomModal);
+        viewFoodRecommendationBtn.addEventListener('click', showFoodRecommendation);
+        closeSymptomModal.addEventListener('click', closeSymptomModalHandler);
+        saveSymptomsBtn.addEventListener('click', saveSymptoms);
+        cancelSymptomsBtn.addEventListener('click', closeSymptomModalHandler);
+        closeDateSelectionModal.addEventListener('click', closeDateSelectionModalHandler);
+        markAsHaidBtn.addEventListener('click', markAsHaid);
+        recordSymptomsBtn.addEventListener('click', recordSymptoms);
+        cancelDateSelectionBtn.addEventListener('click', closeDateSelectionModalHandler);
+        
+        // Initialize
+        updateCurrentDate();
+        generateCalendar();
+        updateTodayStatus();
+        displayHistory();
+        updateFoodRecommendation();
+        
+        // Functions
+        function enterApp() {
+            openingScreen.classList.add('hidden');
+            setTimeout(() => {
+                mainApp.classList.add('visible');
+            }, 500);
+        }
+        
+        function updateCurrentDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateElement.textContent = currentDate.toLocaleDateString('id-ID', options);
+        }
+        
+        function savePeriodData(e) {
+            e.preventDefault();
+            
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+            
+            // Validate dates
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('Tanggal selesai tidak boleh sebelum tanggal mulai!');
+                return;
+            }
+            
+            // Calculate duration
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
+            // Auto-detect cycle type based on duration
+            let cycleType = duration <= 15 ? 'regular' : 'istihadah';
+            
+            // Add to history
+            const periodData = {
+                id: Date.now(),
+                startDate,
+                endDate,
+                duration,
+                cycleType,
+                createdAt: new Date().toISOString()
+            };
+            
+            periodHistory.push(periodData);
+            localStorage.setItem('periodHistory', JSON.stringify(periodHistory));
+            
+            // Reset form
+            periodForm.reset();
+            startDateInput.value = today;
+            endDateInput.value = today;
+            
+            // Update display
+            generateCalendar();
+            updateTodayStatus();
+            displayHistory();
+            
+            alert('Data haid berhasil disimpan!');
+        }
+        
+        function generateCalendar() {
+            // Clear calendar
+            calendarBody.innerHTML = '';
+            
+            // Set month and year in header
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = (firstDay.getDay() + 6) % 7; // Adjust to start from Monday
+            
+            let date = 1;
+            
+            // Create calendar rows
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('tr');
+                
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement('td');
+                    
+                    if (i === 0 && j < startingDay) {
+                        // Empty cells before the first day of the month
+                        const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+                        const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+                        const prevLastDay = new Date(prevYear, prevMonth + 1, 0).getDate();
+                        const prevDate = prevLastDay - startingDay + j + 1;
+                        
+                        cell.innerHTML = `<div class="calendar-day other-month">${prevDate}</div>`;
+                    } else if (date > daysInMonth) {
+                        // Empty cells after the last day of the month
+                        const nextDate = date - daysInMonth;
+                        cell.innerHTML = `<div class="calendar-day other-month">${nextDate}</div>`;
+                        date++;
+                    } else {
+                        // Current month days
+                        const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                        const dayDate = new Date(dateStr);
+                        
+                        const dayElement = document.createElement('div');
+                        dayElement.className = 'calendar-day';
+                        
+                        // Check if today
+                        const today = new Date();
+                        if (dayDate.getDate() === today.getDate() && 
+                            dayDate.getMonth() === today.getMonth() && 
+                            dayDate.getFullYear() === today.getFullYear()) {
+                            dayElement.classList.add('today');
+                        }
+                        
+                        // Check period status
+                        const status = getDateStatus(dayDate);
+                        dayElement.classList.add(status);
+                        
+                        // Add day number
+                        const dayNumber = document.createElement('div');
+                        dayNumber.className = 'day-number';
+                        dayNumber.textContent = date;
+                        dayElement.appendChild(dayNumber);
+                        
+                        // Add status indicator
+                        const statusIndicator = document.createElement('div');
+                        statusIndicator.className = 'day-status';
+                        
+                        if (status === 'haid') {
+                            statusIndicator.textContent = 'Haid';
+                        } else if (status === 'istihadah') {
+                            statusIndicator.textContent = 'Istihadhah';
+                        } else if (status === 'prediction') {
+                            statusIndicator.textContent = 'Prediksi';
+                        } else if (status === 'manual') {
+                            statusIndicator.textContent = 'Haid';
+                        }
+                        
+                        dayElement.appendChild(statusIndicator);
+                        
+                        // Add click event for date selection
+                        cell.addEventListener('click', () => {
+                            selectedDate = dateStr;
+                            openDateSelectionModal(dateStr);
+                        });
+                        
+                        cell.appendChild(dayElement);
+                        date++;
+                    }
+                    
+                    row.appendChild(cell);
+                }
+                
+                calendarBody.appendChild(row);
+                
+                // Stop creating rows if all days have been added
+                if (date > daysInMonth) {
+                    break;
+                }
+            }
+        }
+        
+        function getDateStatus(date) {
+            const dateStr = date.toISOString().split('T')[0];
+            
+            // Check if date is manually marked
+            if (manualPeriods.includes(dateStr)) {
+                return 'manual';
+            }
+            
+            // Check if date is within a recorded period
+            for (const period of periodHistory) {
+                const start = new Date(period.startDate);
+                const end = new Date(period.endDate);
+                
+                if (date >= start && date <= end) {
+                    return period.cycleType === 'regular' ? 'haid' : 'istihadah';
+                }
+            }
+            
+            // Check if date is a predicted period
+            if (isPredictedPeriod(date)) {
+                return 'prediction';
+            }
+            
+            return 'suci';
+        }
+        
+        function isPredictedPeriod(date) {
+            if (periodHistory.length === 0) return false;
+            
+            const dateStr = date.toISOString().split('T')[0];
+            const currentDate = new Date(dateStr);
+            
+            // Calculate average cycle length from all normal periods
+            let totalCycleLength = 0;
+            let cycleCount = 0;
+            
+            for (let i = 1; i < periodHistory.length; i++) {
+                const prevStart = new Date(periodHistory[i-1].startDate);
+                const currStart = new Date(periodHistory[i].startDate);
+                const cycleLength = Math.ceil((currStart - prevStart) / (1000 * 60 * 60 * 24));
+                
+                // Only include cycles that are not istihadah (normal cycles)
+                if (periodHistory[i-1].cycleType === 'regular' && periodHistory[i].cycleType === 'regular') {
+                    totalCycleLength += cycleLength;
+                    cycleCount++;
+                }
+            }
+            
+            // If we have normal cycles, use average
+            let avgCycleLength = 28; // default
+            if (cycleCount > 0) {
+                avgCycleLength = Math.round(totalCycleLength / cycleCount);
+            }
+            
+            // Calculate average duration from all normal periods
+            let totalDuration = 0;
+            let durationCount = 0;
+            
+            periodHistory.forEach(period => {
+                if (period.cycleType === 'regular') {
+                    totalDuration += period.duration;
+                    durationCount++;
+                }
+            });
+            
+            const avgDuration = durationCount > 0 ? Math.round(totalDuration / durationCount) : 5;
+            
+            // Generate predictions for all months based on first period
+            const firstPeriod = periodHistory[0];
+            const firstStart = new Date(firstPeriod.startDate);
+            
+            // Calculate predicted periods for current and future months
+            // We'll generate predictions for the next 12 months from the first period
+            for (let i = 1; i <= 24; i++) { // Predict for 2 years ahead
+                const predictedStart = new Date(firstStart);
+                predictedStart.setDate(predictedStart.getDate() + (i * avgCycleLength));
+                
+                const predictedEnd = new Date(predictedStart);
+                predictedEnd.setDate(predictedEnd.getDate() + avgDuration - 1);
+                
+                // Check if current date falls within this predicted period
+                if (currentDate >= predictedStart && currentDate <= predictedEnd) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        function toggleManualPeriod(dateStr) {
+            if (manualPeriods.includes(dateStr)) {
+                // Remove from manual periods
+                manualPeriods = manualPeriods.filter(d => d !== dateStr);
+                alert('Haid berhasil dihapus!');
+            } else {
+                // Add to manual periods
+                manualPeriods.push(dateStr);
+                alert('Tanggal berhasil ditandai sebagai haid!');
+            }
+            
+            localStorage.setItem('manualPeriods', JSON.stringify(manualPeriods));
+            generateCalendar();
+            updateTodayStatus(); // Pastikan status hari ini diperbarui
+        }
+        
+        function updateTodayStatus() {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const status = getDateStatus(today);
+            
+            let statusText = '';
+            let statusDetails = '';
+            
+            // Periksa apakah hari ini adalah manual period (haid yang ditandai manual)
+            const isManualHaid = manualPeriods.includes(todayStr);
+            
+            if (status === 'haid' || status === 'manual' || isManualHaid) {
+                statusText = 'Masa Haid';
+                statusDetails = 'Anda sedang dalam masa haid. Perhatikan pantangan yang berlaku.';
+                
+                // Hitung durasi haid untuk menentukan apakah istihadhah
+                let haidDuration = 1; // Default 1 hari untuk manual marking
+                
+                // Cari periode haid yang sedang berlangsung
+                for (const period of periodHistory) {
+                    const start = new Date(period.startDate);
+                    const end = new Date(period.endDate);
+                    
+                    if (today >= start && today <= end) {
+                        haidDuration = period.duration;
+                        if (period.cycleType === 'istihadah' || haidDuration > 15) {
+                            statusText = 'Haid Istihadhah';
+                            statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
+                        }
+                        break;
+                    }
+                }
+                
+                // Untuk manual periods, kita perlu menghitung durasi
+                if (isManualHaid) {
+                    // Cari rentang tanggal manual yang berurutan
+                    const sortedManual = [...manualPeriods].sort();
+                    let currentStreak = 1;
+                    let maxStreak = 1;
+                    
+                    for (let i = 1; i < sortedManual.length; i++) {
+                        const prevDate = new Date(sortedManual[i-1]);
+                        const currDate = new Date(sortedManual[i]);
+                        const diffTime = currDate - prevDate;
+                        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                        
+                        if (diffDays === 1) {
+                            currentStreak++;
+                            maxStreak = Math.max(maxStreak, currentStreak);
+                        } else {
+                            currentStreak = 1;
+                        }
+                    }
+                    
+                    if (maxStreak > 15) {
+                        statusText = 'Haid Istihadhah';
+                        statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
+                    }
+                }
+            } else if (status === 'istihadah') {
+                statusText = 'Haid Istihadhah';
+                statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
+            } else if (status === 'prediction') {
+                statusText = 'Masa Suci (Prediksi Haid Mendatang)';
+                statusDetails = 'Masa suci. Prediksi haid berikutnya akan segera dimulai.';
+            } else {
+                statusText = 'Masa Suci';
+                statusDetails = 'Anda sedang dalam masa suci. Semua ibadah dapat dilakukan secara normal.';
+            }
+            
+            todayStatusElement.textContent = statusText;
+            todayDetailsElement.textContent = statusDetails;
+            
+            // Update status icon based on status
+            const statusIcon = document.querySelector('.status-icon i');
+            if (status === 'haid' || status === 'manual' || status === 'istihadah' || isManualHaid) {
+                statusIcon.className = 'fas fa-tint';
+            } else {
+                statusIcon.className = 'fas fa-heartbeat';
+            }
+        }
+        
+        function changeMonth(direction) {
+            currentMonth += direction;
+            
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            
+            generateCalendar();
+        }
+        
+        function goToToday() {
+            currentDate = new Date();
+            currentMonth = currentDate.getMonth();
+            currentYear = currentDate.getFullYear();
+            updateCurrentDate();
+            generateCalendar();
+            updateTodayStatus();
+        }
+        
+        function displayHistory() {
+            if (periodHistory.length === 0) {
+                historyList.innerHTML = '<p>Belum ada data haid yang tercatat.</p>';
+                return;
+            }
+            
+            // Sort by date (newest first)
+            const sortedHistory = [...periodHistory].sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+            
+            historyList.innerHTML = sortedHistory.map(period => `
+                <div class="history-item">
+                    <div>
+                        <div class="history-date">${formatDate(period.startDate)} - ${formatDate(period.endDate)}</div>
+                        <div class="history-duration">${period.duration} hari (${period.cycleType === 'regular' ? 'Haid Biasa' : 'Haid Istihadhah'})</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="btn-danger" onclick="deletePeriod(${period.id})">Hapus</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function deletePeriod(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                periodHistory = periodHistory.filter(period => period.id !== id);
+                localStorage.setItem('periodHistory', JSON.stringify(periodHistory));
+                generateCalendar();
+                updateTodayStatus();
+                displayHistory();
+            }
+        }
+        
+        function clearAllHistory() {
+            if (confirm('Apakah Anda yakin ingin menghapus SEMUA riwayat haid? Tindakan ini tidak dapat dibatalkan.')) {
+                periodHistory = [];
+                manualPeriods = [];
+                symptoms = {};
+                localStorage.setItem('periodHistory', JSON.stringify(periodHistory));
+                localStorage.setItem('manualPeriods', JSON.stringify(manualPeriods));
+                localStorage.setItem('symptoms', JSON.stringify(symptoms));
+                generateCalendar();
+                updateTodayStatus();
+                displayHistory();
+                updateFoodRecommendation();
+            }
+        }
+        
+        function openDateSelectionModal(dateStr = null) {
+            if (dateStr) {
+                selectedDate = dateStr;
+            } else {
+                // If no date specified, use today
+                selectedDate = new Date().toISOString().split('T')[0];
+            }
+            
+            // Update selected date text
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            selectedActionDateText.textContent = `Tanggal: ${new Date(selectedDate).toLocaleDateString('id-ID', options)}`;
+            
+            // Show modal
+            dateSelectionModal.classList.add('active');
+        }
+        
+        function openSymptomModal(dateStr = null) {
+            if (dateStr) {
+                selectedDate = dateStr;
+            } else {
+                // If no date specified, use today
+                selectedDate = new Date().toISOString().split('T')[0];
+            }
+            
+            // Reset selected options
+            document.querySelectorAll('.symptom-category-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Update selected date text
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            selectedDateText.textContent = `Tanggal: ${new Date(selectedDate).toLocaleDateString('id-ID', options)}`;
+            
+            // Load existing symptoms for this date if any
+            if (symptoms[selectedDate]) {
+                symptoms[selectedDate].forEach(symptom => {
+                    const categoryOptions = document.querySelectorAll(`#${symptom.category}Options .symptom-category-option`);
+                    categoryOptions.forEach(option => {
+                        if (option.getAttribute('data-value') === symptom.value) {
+                            option.classList.add('selected');
+                        }
+                    });
+                });
+            }
+            
+            // Update selected symptoms list
+            updateSelectedSymptomsList();
+            
+            // Show modal
+            symptomModal.classList.add('active');
+            
+            // Add event listeners to symptom options
+            document.querySelectorAll('.symptom-category-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected class from all options in the same category
+                    const category = this.parentElement.id.replace('Options', '');
+                    document.querySelectorAll(`#${category}Options .symptom-category-option`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Update selected symptoms list
+                    updateSelectedSymptomsList();
+                });
+            });
+        }
+        
+        function closeSymptomModalHandler() {
+            symptomModal.classList.remove('active');
+            // Regenerate calendar to restore original colors
+            generateCalendar();
+        }
+        
+        function closeDateSelectionModalHandler() {
+            dateSelectionModal.classList.remove('active');
+            // Regenerate calendar to restore original colors
+            generateCalendar();
+        }
+        
+        function markAsHaid() {
+            if (!selectedDate) return;
+            
+            toggleManualPeriod(selectedDate);
+            closeDateSelectionModalHandler();
+        }
+        
+        function recordSymptoms() {
+            closeDateSelectionModalHandler();
+            openSymptomModal(selectedDate);
+        }
+        
+        function updateSelectedSymptomsList() {
+            selectedSymptomsList.innerHTML = '';
+            
+            const categories = ['mood', 'blood', 'pain'];
+            let hasSymptoms = false;
+            
+            categories.forEach(category => {
+                const selectedOption = document.querySelector(`#${category}Options .symptom-category-option.selected`);
+                if (selectedOption) {
+                    hasSymptoms = true;
+                    const li = document.createElement('li');
+                    li.textContent = `${category === 'mood' ? 'Mood' : category === 'blood' ? 'Volume Darah' : 'Tingkat Nyeri'}: ${selectedOption.getAttribute('data-value')}`;
+                    selectedSymptomsList.appendChild(li);
+                }
+            });
+            
+            if (!hasSymptoms) {
+                const li = document.createElement('li');
+                li.textContent = 'Belum ada gejala yang dipilih';
+                selectedSymptomsList.appendChild(li);
+            }
+        }
+        
+        function saveSymptoms() {
+            if (!selectedDate) return;
+            
+            const categories = ['mood', 'blood', 'pain'];
+            const selectedSymptoms = [];
+            
+            categories.forEach(category => {
+                const selectedOption = document.querySelector(`#${category}Options .symptom-category-option.selected`);
+                if (selectedOption) {
+                    selectedSymptoms.push({
+                        category: category,
+                        value: selectedOption.getAttribute('data-value')
+                    });
+                }
+            });
+            
+            if (selectedSymptoms.length === 0) {
+                alert('Pilih setidaknya satu gejala sebelum menyimpan');
+                return;
+            }
+            
+            // Save symptoms
+            symptoms[selectedDate] = selectedSymptoms;
+            localStorage.setItem('symptoms', JSON.stringify(symptoms));
+            
+            // Close modal
+            closeSymptomModalHandler();
+            
+            // Update food recommendation
+            updateFoodRecommendation();
+            
+            alert('Gejala berhasil disimpan!');
+        }
+        
+        function updateFoodRecommendation() {
+            // Get all symptoms
+            const allSymptoms = Object.values(symptoms).flat();
+            
+            if (allSymptoms.length === 0) {
+                foodRecommendationElement.style.display = 'none';
+                return;
+            }
+            
+            // Generate food recommendations based on symptoms
+            let recommendedFoods = [];
+            
+            allSymptoms.forEach(symptom => {
+                if (symptom.category === 'mood' && symptom.value !== "Biasa saja" && symptom.value !== "Bahagia") {
+                    recommendedFoods = recommendedFoods.concat(foodRecommendations.mood[symptom.value] || []);
+                }
+                
+                if (symptom.category === 'blood' && (symptom.value === "Banyak" || symptom.value === "Sangat Banyak")) {
+                    recommendedFoods = recommendedFoods.concat(foodRecommendations.blood[symptom.value] || []);
+                }
+                
+                if (symptom.category === 'pain' && symptom.value !== "Tidak ada" && symptom.value !== "Ringan") {
+                    recommendedFoods = recommendedFoods.concat(foodRecommendations.pain[symptom.value] || []);
+                }
+            });
+            
+            // Remove duplicates
+            recommendedFoods = [...new Set(recommendedFoods)];
+            
+            // Update UI
+            if (recommendedFoods.length > 0) {
+                foodRecommendationText.textContent = "Berdasarkan gejala yang Anda pilih, berikut rekomendasi makanan:";
+                foodList.innerHTML = recommendedFoods.map(food => `<li>${food}</li>`).join('');
+                foodRecommendationElement.style.display = 'block';
+            } else {
+                foodRecommendationElement.style.display = 'none';
+            }
+        }
+        
+        function showFoodRecommendation() {
+            updateFoodRecommendation();
+            if (foodRecommendationElement.style.display === 'block') {
+                foodRecommendationElement.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Belum ada gejala yang dicatat. Silakan catat gejala terlebih dahulu.');
+            }
+        }
+        
+        function formatDate(dateString) {
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+        
+        // Tambahkan fungsi untuk menghitung durasi haid manual
+        function calculateManualHaidDuration(dateStr) {
+            if (!manualPeriods.includes(dateStr)) return 0;
+            
+            const sortedManual = [...manualPeriods].sort();
+            const dateIndex = sortedManual.indexOf(dateStr);
+            
+            if (dateIndex === -1) return 1;
+            
+            // Hitung ke depan
+            let duration = 1;
+            for (let i = dateIndex + 1; i < sortedManual.length; i++) {
+                const prevDate = new Date(sortedManual[i-1]);
+                const currDate = new Date(sortedManual[i]);
+                const diffDays = (currDate - prevDate) / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    duration++;
+                } else {
+                    break;
+                }
+            }
+            
+            // Hitung ke belakang
+            for (let i = dateIndex - 1; i >= 0; i--) {
+                const prevDate = new Date(sortedManual[i]);
+                const currDate = new Date(sortedManual[i+1]);
+                const diffDays = (currDate - prevDate) / (1000 * 60 * 60 * 24);
+                
+                if (diffDays === 1) {
+                    duration++;
+                } else {
+                    break;
+                }
+            }
+            
+            return duration;
+        }
+    </script>
+</body>
+</html>
