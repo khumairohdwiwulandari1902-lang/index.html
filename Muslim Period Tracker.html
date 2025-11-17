@@ -798,6 +798,24 @@
                     </div>
                 </div>
                 
+                <!-- Pindahkan form Tambah Data ke bawah kalender -->
+                <div class="card">
+                    <h2><i class="fas fa-calendar-plus"></i> Tambah Data Haid</h2>
+                    <form id="periodForm">
+                        <div class="form-group">
+                            <label for="startDate">Tanggal Mulai Haid</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="endDate">Tanggal Selesai Haid</label>
+                            <input type="date" id="endDate" required>
+                        </div>
+                        
+                        <button type="submit">Simpan Data Haid</button>
+                    </form>
+                </div>
+                
                 <div class="card">
                     <h2><i class="fas fa-notes-medical"></i> Gejala</h2>
                     <div class="track-options">
@@ -852,62 +870,46 @@
                     </div>
                 </div>
                 
-                <div class="card">
-                    <h2><i class="fas fa-calendar-plus"></i> Tambah Data</h2>
-                    <form id="periodForm">
-                        <div class="form-group">
-                            <label for="startDate">Tanggal Mulai Haid</label>
-                            <input type="date" id="startDate" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="endDate">Tanggal Selesai Haid</label>
-                            <input type="date" id="endDate" required>
-                        </div>
-                        
-                        <button type="submit">Simpan Data Haid</button>
-                    </form>
-                    
-                    <div class="info-box haid">
-                        <div class="info-title haid">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span>Pantangan Haid Biasa</span>
-                        </div>
-                        <div class="info-content">
-                            <p>Menurut fiqih Islam, wanita yang sedang haid dilarang:</p>
-                            <ul>
-                                <li>Melaksanakan shalat fardhu dan sunnah</li>
-                                <li>Berpuasa (wajib mengqadha puasa Ramadhan)</li>
-                                <li>Membaca Al-Quran (kecuali dalam hati)</li>
-                                <li>Masuk masjid (kecuali untuk keperluan tertentu)</li>
-                                <li>Berhubungan suami istri</li>
-                                <li>Thawaf di Ka'bah</li>
-                                <li>Menyentuh mushaf Al-Quran</li>
-                            </ul>
-                        </div>
+                <!-- Info boxes dipindah ke sini -->
+                <div class="info-box haid">
+                    <div class="info-title haid">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Pantangan Haid Biasa</span>
                     </div>
-                    
-                    <div class="info-box">
-                        <div class="info-title">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span>Informasi Istihadhah</span>
-                        </div>
-                        <div class="info-content">
-                            <p><strong>Saran Konsumsi:</strong></p>
-                            <ul>
-                                <li>Makanan kaya zat besi (daging, hati, bayam)</li>
-                                <li>Jahe dan kurma untuk menguatkan rahim</li>
-                                <li>Makanan bergizi untuk mengembalikan energi</li>
-                            </ul>
-                            <p><strong>Ketentuan dalam Islam:</strong></p>
-                            <ul>
-                                <li>Wajib shalat dengan berwudhu setiap waktu</li>
-                                <li>Boleh berpuasa</li>
-                                <li>Boleh membaca Al-Quran</li>
-                                <li>Boleh berhubungan suami istri</li>
-                                <li>Wajib mandi setelah darah berhenti</li>
-                            </ul>
-                        </div>
+                    <div class="info-content">
+                        <p>Menurut fiqih Islam, wanita yang sedang haid dilarang:</p>
+                        <ul>
+                            <li>Melaksanakan shalat fardhu dan sunnah</li>
+                            <li>Berpuasa (wajib mengqadha puasa Ramadhan)</li>
+                            <li>Membaca Al-Quran (kecuali dalam hati)</li>
+                            <li>Masuk masjid (kecuali untuk keperluan tertentu)</li>
+                            <li>Berhubungan suami istri</li>
+                            <li>Thawaf di Ka'bah</li>
+                            <li>Menyentuh mushaf Al-Quran</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <div class="info-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Informasi Istihadhah</span>
+                    </div>
+                    <div class="info-content">
+                        <p><strong>Saran Konsumsi:</strong></p>
+                        <ul>
+                            <li>Makanan kaya zat besi (daging, hati, bayam)</li>
+                            <li>Jahe dan kurma untuk menguatkan rahim</li>
+                            <li>Makanan bergizi untuk mengembalikan energi</li>
+                        </ul>
+                        <p><strong>Ketentuan dalam Islam:</strong></p>
+                        <ul>
+                            <li>Wajib shalat dengan berwudhu setiap waktu</li>
+                            <li>Boleh berpuasa</li>
+                            <li>Boleh membaca Al-Quran</li>
+                            <li>Boleh berhubungan suami istri</li>
+                            <li>Wajib mandi setelah darah berhenti</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -1372,11 +1374,9 @@
             const isManualHaid = manualPeriods.includes(todayStr);
             
             if (status === 'haid' || status === 'manual' || isManualHaid) {
-                statusText = 'Masa Haid';
-                statusDetails = 'Anda sedang dalam masa haid. Perhatikan pantangan yang berlaku.';
-                
                 // Hitung durasi haid untuk menentukan apakah istihadhah
                 let haidDuration = 1; // Default 1 hari untuk manual marking
+                let isIstihadah = false;
                 
                 // Cari periode haid yang sedang berlangsung
                 for (const period of periodHistory) {
@@ -1386,23 +1386,30 @@
                     if (today >= start && today <= end) {
                         haidDuration = period.duration;
                         if (period.cycleType === 'istihadah' || haidDuration > 15) {
-                            statusText = 'Haid Istihadhah';
-                            statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
+                            isIstihadah = true;
                         }
                         break;
                     }
                 }
                 
                 // Untuk manual periods, kita perlu menghitung durasi
-                if (isManualHaid) {
+                if (isManualHaid && !isIstihadah) {
                     const duration = calculateManualHaidDuration(todayStr);
                     if (duration > 15) {
-                        statusText = 'Haid Istihadhah';
-                        statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
+                        isIstihadah = true;
                     }
                 }
+                
+                if (isIstihadah) {
+                    statusText = 'Masa Istihadhah';
+                    statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
+                } else {
+                    statusText = 'Masa Haid';
+                    statusDetails = 'Anda sedang dalam masa haid. Perhatikan pantangan yang berlaku.';
+                }
+                
             } else if (status === 'istihadah') {
-                statusText = 'Haid Istihadhah';
+                statusText = 'Masa Istihadhah';
                 statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
             } else if (status === 'prediction') {
                 statusText = 'Masa Suci (Prediksi Haid Mendatang)';
