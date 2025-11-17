@@ -798,7 +798,7 @@
                     </div>
                 </div>
                 
-                <!-- Pindahkan form Tambah Data ke bawah kalender -->
+                <!-- Form Tambah Data di bawah kalender -->
                 <div class="card">
                     <h2><i class="fas fa-calendar-plus"></i> Tambah Data Haid</h2>
                     <form id="periodForm">
@@ -870,7 +870,7 @@
                     </div>
                 </div>
                 
-                <!-- Info boxes dipindah ke sini -->
+                <!-- Info boxes -->
                 <div class="info-box haid">
                     <div class="info-title haid">
                         <i class="fas fa-exclamation-circle"></i>
@@ -1229,8 +1229,6 @@
                             statusIndicator.textContent = 'Istihadhah';
                         } else if (status === 'prediction') {
                             statusIndicator.textContent = 'Prediksi';
-                        } else if (status === 'manual') {
-                            statusIndicator.textContent = 'Haid';
                         }
                         
                         dayElement.appendChild(statusIndicator);
