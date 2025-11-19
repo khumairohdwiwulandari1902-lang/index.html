@@ -585,13 +585,6 @@
             padding: 20px;
             color: #777;
             font-size: 0.9rem;
-            border-top: 1px solid #eee;
-        }
-
-        .footer-credit {
-            font-size: 0.9rem;
-            color: #666;
-            line-height: 1.4;
         }
 
         /* Modal Styles */
@@ -765,7 +758,7 @@
                         </div>
                         <div class="status-info">
                             <h3 id="todayStatus">Masa Suci</h3>
-                            <p id="todayDetails">Hari ke-12 dari siklus 28 hari</p>
+                            <p id="todayDetails">Belum ada data haid yang dicatat</p>
                         </div>
                     </div>
                     
@@ -796,24 +789,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-                
-                <!-- Form Tambah Data di bawah kalender -->
-                <div class="card">
-                    <h2><i class="fas fa-calendar-plus"></i> Tambah Data Haid</h2>
-                    <form id="periodForm">
-                        <div class="form-group">
-                            <label for="startDate">Tanggal Mulai Haid</label>
-                            <input type="date" id="startDate" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="endDate">Tanggal Selesai Haid</label>
-                            <input type="date" id="endDate" required>
-                        </div>
-                        
-                        <button type="submit">Simpan Data Haid</button>
-                    </form>
                 </div>
                 
                 <div class="card">
@@ -870,56 +845,69 @@
                     </div>
                 </div>
                 
-                <!-- Info boxes -->
-                <div class="info-box haid">
-                    <div class="info-title haid">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span>Pantangan Haid Biasa</span>
+                <div class="card">
+                    <h2><i class="fas fa-calendar-plus"></i> Tambah Data</h2>
+                    <form id="periodForm">
+                        <div class="form-group">
+                            <label for="startDate">Tanggal Mulai Haid</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="endDate">Tanggal Selesai Haid</label>
+                            <input type="date" id="endDate" required>
+                        </div>
+                        
+                        <button type="submit">Simpan Data Haid</button>
+                    </form>
+                    
+                    <div class="info-box haid">
+                        <div class="info-title haid">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Pantangan Haid Biasa</span>
+                        </div>
+                        <div class="info-content">
+                            <p>Menurut fiqih Islam, wanita yang sedang haid dilarang:</p>
+                            <ul>
+                                <li>Melaksanakan shalat fardhu dan sunnah</li>
+                                <li>Berpuasa (wajib mengqadha puasa Ramadhan)</li>
+                                <li>Membaca Al-Quran (kecuali dalam hati)</li>
+                                <li>Masuk masjid (kecuali untuk keperluan tertentu)</li>
+                                <li>Berhubungan suami istri</li>
+                                <li>Thawaf di Ka'bah</li>
+                                <li>Menyentuh mushaf Al-Quran</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="info-content">
-                        <p>Menurut fiqih Islam, wanita yang sedang haid dilarang:</p>
-                        <ul>
-                            <li>Melaksanakan shalat fardhu dan sunnah</li>
-                            <li>Berpuasa (wajib mengqadha puasa Ramadhan)</li>
-                            <li>Membaca Al-Quran (kecuali dalam hati)</li>
-                            <li>Masuk masjid (kecuali untuk keperluan tertentu)</li>
-                            <li>Berhubungan suami istri</li>
-                            <li>Thawaf di Ka'bah</li>
-                            <li>Menyentuh mushaf Al-Quran</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="info-box">
-                    <div class="info-title">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>Informasi Istihadhah</span>
-                    </div>
-                    <div class="info-content">
-                        <p><strong>Saran Konsumsi:</strong></p>
-                        <ul>
-                            <li>Makanan kaya zat besi (daging, hati, bayam)</li>
-                            <li>Jahe dan kurma untuk menguatkan rahim</li>
-                            <li>Makanan bergizi untuk mengembalikan energi</li>
-                        </ul>
-                        <p><strong>Ketentuan dalam Islam:</strong></p>
-                        <ul>
-                            <li>Wajib shalat dengan berwudhu setiap waktu</li>
-                            <li>Boleh berpuasa</li>
-                            <li>Boleh membaca Al-Quran</li>
-                            <li>Boleh berhubungan suami istri</li>
-                            <li>Wajib mandi setelah darah berhenti</li>
-                        </ul>
+                    
+                    <div class="info-box">
+                        <div class="info-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Informasi Istihadhah</span>
+                        </div>
+                        <div class="info-content">
+                            <p><strong>Saran Konsumsi:</strong></p>
+                            <ul>
+                                <li>Makanan kaya zat besi (daging, hati, bayam)</li>
+                                <li>Jahe dan kurma untuk menguatkan rahim</li>
+                                <li>Makanan bergizi untuk mengembalikan energi</li>
+                            </ul>
+                            <p><strong>Ketentuan dalam Islam:</strong></p>
+                            <ul>
+                                <li>Wajib shalat dengan berwudhu setiap waktu</li>
+                                <li>Boleh berpuasa</li>
+                                <li>Boleh membaca Al-Quran</li>
+                                <li>Boleh berhubungan suami istri</li>
+                                <li>Wajib mandi setelah darah berhenti</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <footer>
-            <div class="footer-credit">
-                <p>Oleh Wulan dan Vanda</p>
-                <p>SMAN KABUH JOMBANG | 2025</p>
-            </div>
+            <p>Muslim Period Tracker &copy; 2024 - Pelacak Siklus Haid Islami</p>
         </footer>
     </div>
 
@@ -1357,7 +1345,7 @@
             
             localStorage.setItem('manualPeriods', JSON.stringify(manualPeriods));
             generateCalendar();
-            updateTodayStatus(); // Pastikan status hari ini diperbarui
+            updateTodayStatus();
         }
         
         function updateTodayStatus() {
@@ -1368,65 +1356,67 @@
             let statusText = '';
             let statusDetails = '';
             
-            // Periksa apakah hari ini adalah manual period (haid yang ditandai manual)
-            const isManualHaid = manualPeriods.includes(todayStr);
+            // Check if today is within any recorded period
+            let isInPeriod = false;
+            let isIstihadah = false;
             
-            if (status === 'haid' || status === 'manual' || isManualHaid) {
-                // Hitung durasi haid untuk menentukan apakah istihadhah
-                let haidDuration = 1; // Default 1 hari untuk manual marking
-                let isIstihadah = false;
+            for (const period of periodHistory) {
+                const start = new Date(period.startDate);
+                const end = new Date(period.endDate);
                 
-                // Cari periode haid yang sedang berlangsung
-                for (const period of periodHistory) {
-                    const start = new Date(period.startDate);
-                    const end = new Date(period.endDate);
-                    
-                    if (today >= start && today <= end) {
-                        haidDuration = period.duration;
-                        if (period.cycleType === 'istihadah' || haidDuration > 15) {
-                            isIstihadah = true;
-                        }
-                        break;
-                    }
-                }
-                
-                // Untuk manual periods, kita perlu menghitung durasi
-                if (isManualHaid && !isIstihadah) {
-                    const duration = calculateManualHaidDuration(todayStr);
-                    if (duration > 15) {
+                if (today >= start && today <= end) {
+                    isInPeriod = true;
+                    if (period.cycleType === 'istihadah') {
                         isIstihadah = true;
                     }
+                    break;
                 }
-                
+            }
+            
+            // Check if today is manually marked as haid
+            const isManualHaid = manualPeriods.includes(todayStr);
+            
+            if (isInPeriod || isManualHaid) {
                 if (isIstihadah) {
-                    statusText = 'Masa Istihadhah';
+                    statusText = 'Haid Istihadhah';
                     statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
                 } else {
                     statusText = 'Masa Haid';
                     statusDetails = 'Anda sedang dalam masa haid. Perhatikan pantangan yang berlaku.';
                 }
                 
-            } else if (status === 'istihadah') {
-                statusText = 'Masa Istihadhah';
-                statusDetails = 'Anda sedang dalam masa haid istihadhah. Perhatikan ketentuan yang berlaku.';
+                // Update icon to blood drop
+                const statusIcon = document.querySelector('.status-icon i');
+                statusIcon.className = 'fas fa-tint';
+                
+                // Update background color to haid color
+                document.querySelector('.today-status').style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+                
             } else if (status === 'prediction') {
                 statusText = 'Masa Suci (Prediksi Haid Mendatang)';
                 statusDetails = 'Masa suci. Prediksi haid berikutnya akan segera dimulai.';
+                
+                // Reset to default icon and color
+                const statusIcon = document.querySelector('.status-icon i');
+                statusIcon.className = 'fas fa-heartbeat';
+                document.querySelector('.today-status').style.backgroundColor = 'rgba(142, 68, 173, 0.1)';
             } else {
                 statusText = 'Masa Suci';
                 statusDetails = 'Anda sedang dalam masa suci. Semua ibadah dapat dilakukan secara normal.';
+                
+                // Reset to default icon and color
+                const statusIcon = document.querySelector('.status-icon i');
+                statusIcon.className = 'fas fa-heartbeat';
+                document.querySelector('.today-status').style.backgroundColor = 'rgba(142, 68, 173, 0.1)';
+            }
+            
+            // Update default message if no data
+            if (periodHistory.length === 0 && manualPeriods.length === 0) {
+                statusDetails = 'Belum ada data haid yang dicatat';
             }
             
             todayStatusElement.textContent = statusText;
             todayDetailsElement.textContent = statusDetails;
-            
-            // Update status icon based on status
-            const statusIcon = document.querySelector('.status-icon i');
-            if (status === 'haid' || status === 'manual' || status === 'istihadah' || isManualHaid) {
-                statusIcon.className = 'fas fa-tint';
-            } else {
-                statusIcon.className = 'fas fa-heartbeat';
-            }
         }
         
         function changeMonth(direction) {
@@ -1700,66 +1690,6 @@
         function formatDate(dateString) {
             const options = { day: 'numeric', month: 'short', year: 'numeric' };
             return new Date(dateString).toLocaleDateString('id-ID', options);
-        }
-        
-        // Fungsi untuk menghitung durasi haid manual
-        function calculateManualHaidDuration(dateStr) {
-            if (!manualPeriods.includes(dateStr)) return 0;
-            
-            const sortedManual = [...manualPeriods].sort();
-            const dateIndex = sortedManual.indexOf(dateStr);
-            
-            if (dateIndex === -1) return 1;
-            
-            // Hitung ke depan
-            let duration = 1;
-            for (let i = dateIndex + 1; i < sortedManual.length; i++) {
-                const prevDate = new Date(sortedManual[i-1]);
-                const currDate = new Date(sortedManual[i]);
-                const diffDays = (currDate - prevDate) / (1000 * 60 * 60 * 24);
-                
-                if (diffDays === 1) {
-                    duration++;
-                } else {
-                    break;
-                }
-            }
-            
-            // Hitung ke belakang
-            for (let i = dateIndex - 1; i >= 0; i--) {
-                const prevDate = new Date(sortedManual[i]);
-                const currDate = new Date(sortedManual[i+1]);
-                const diffDays = (currDate - prevDate) / (1000 * 60 * 60 * 24);
-                
-                if (diffDays === 1) {
-                    duration++;
-                } else {
-                    break;
-                }
-            }
-            
-            return duration;
-        }
-
-        // Fungsi untuk menandai tanggal sebagai haid (dari modal)
-        function markAsHaid() {
-            if (!selectedDate) return;
-            
-            // Tambahkan ke manual periods
-            if (!manualPeriods.includes(selectedDate)) {
-                manualPeriods.push(selectedDate);
-                localStorage.setItem('manualPeriods', JSON.stringify(manualPeriods));
-                
-                // Update tampilan
-                generateCalendar();
-                updateTodayStatus();
-                
-                alert('Tanggal berhasil ditandai sebagai haid!');
-            } else {
-                alert('Tanggal ini sudah ditandai sebagai haid!');
-            }
-            
-            closeDateSelectionModalHandler();
         }
     </script>
 </body>
